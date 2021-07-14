@@ -11,3 +11,10 @@ class standardButton(qtw.QPushButton):
         min-width: 2em;
         padding: 6px;
         }""")
+
+class fieldControllerWidget(qtw.QGroupBox):
+
+    def __init__(self,*args,**kwargs):
+        super().__init__()
+        self.setLayout(qtw.QFormLayout())
+        

@@ -1,6 +1,6 @@
 import sys
 import pyvisa
-from custom_widgets import stadardButton
+from custom_widgets import standardButton, fieldControllerWidget
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -16,13 +16,21 @@ class MainWindow(qtw.QMainWindow):
     def makeUI(self):
         '''Constructs the visual components of the UI'''
         self.setWindowTitle('Hall GUI')
-        centralWidget = qtw.QWidget()
-        outerLayout = qtw.QVBoxLayout()
+
+        hallWidget = qtw.QWidget()
+        hallLayout = qtw.QHBoxLayout()
+
+        self.fieldControllerWidget = fieldControllerWidget('Field Controller B-H 15')
+        hallLayout.addWidget(self.fieldControllerWidget)
+
         self.magnetButton = standardButton("Flip Magnet Switch")
         self.magnetButton.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                         qtw.QSizePolicy.MinimumExpanding)
-        outerLayout.addWidget(self.magnetButton)
-        centralWidget.setLayout(outerLayout)
+        hallLayout.addWidget(self.magnetButton)
+        hallWidget.setLayout(hallLayout)
+
+        centralWidget = qtw.QTabWidget()
+        centralWidget.addTab(hallWidget, "Hall")
         self.setCentralWidget(centralWidget)
         self.resize(600,600)
 
