@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets as qtw
 
-class blueButton(qtw.QPushButton):
+class standardButton(qtw.QPushButton):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

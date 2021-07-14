@@ -1,6 +1,6 @@
 import sys
 import pyvisa
-from custom_widgets import blueButton
+from custom_widgets import stadardButton
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -18,7 +18,7 @@ class MainWindow(qtw.QMainWindow):
         self.setWindowTitle('Hall GUI')
         centralWidget = qtw.QWidget()
         outerLayout = qtw.QVBoxLayout()
-        self.magnetButton = blueButton("Flip Magnet Switch")
+        self.magnetButton = standardButton("Flip Magnet Switch")
         self.magnetButton.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                         qtw.QSizePolicy.MinimumExpanding)
         outerLayout.addWidget(self.magnetButton)
@@ -28,7 +28,7 @@ class MainWindow(qtw.QMainWindow):
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
-        pass
+        self.magnetButton.clicked.connect(flipMagnet)
 
     def flipMagnet(self):
         '''logic for turning the magnet on and off'''
