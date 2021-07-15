@@ -2,13 +2,9 @@ import sys
 from typing import List
 from miscellaneous import find_minimum
 import numpy as np
-from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
-from PyQt5 import QtChart as qtch
-from PyQt5.QtChart import QChart, QScatterSeries
+from PyQt5.QtChart import QChart, QScatterSeries, QValueAxis, QLogValueAxis
 from PyQt5.QtCore import QPointF, QRect, QRectF, QSizeF, Qt
-from PyQt5.QtGui import QColor, QFont, QFontMetrics, QMouseEvent, QPainter, QPainterPath, QResizeEvent
+from PyQt5.QtGui import QColor, QFont, QFontMetrics, QMouseEvent, QPainter, QPainterPath, QResizeEvent, QCursor
 from PyQt5.QtWidgets import QApplication, QGraphicsItem, QGraphicsScene, QGraphicsSceneMouseEvent, \
     QGraphicsSimpleTextItem, QGraphicsView, QStyleOptionGraphicsItem, QWidget
 
@@ -128,8 +124,8 @@ class View(QGraphicsView):
         self.m_chart.addSeries(self.series)
         self.m_chart.createDefaultAxes()
         self.m_chart.setAcceptHoverEvents(True)
-        self.m_chart.setTheme(qtch.QChart.ChartThemeDark)
-        self.m_chart.setCursor(qtg.QCursor(qtc.Qt.CrossCursor))
+        self.m_chart.setTheme(QChart.ChartThemeDark)
+        self.m_chart.setCursor(QCursor(Qt.CrossCursor))
         self.xdata = []
         self.ydata = []
         self.setRenderHint(QPainter.Antialiasing)
@@ -139,24 +135,24 @@ class View(QGraphicsView):
 
         self.m_coordX = QGraphicsSimpleTextItem(self.m_chart)
         self.m_coordX.setPos(self.m_chart.size().width() / 2 - 50, self.m_chart.size().height() - 30)
-        self.m_coordX.setBrush(qtg.QColor('green'))
+        self.m_coordX.setBrush(QColor('green'))
         self.m_coordX.setText("X: ")
         self.m_coordY = QGraphicsSimpleTextItem(self.m_chart)
         self.m_coordY.setPos(self.m_chart.size().width() / 2 + 50, self.m_chart.size().height() - 30)
-        self.m_coordY.setBrush(qtg.QColor('green'))
+        self.m_coordY.setBrush(QColor('green'))
         self.m_coordY.setText("Y: ")
 
-        self.x_axis = qtch.QValueAxis()
+        self.x_axis = QValueAxis()
         self.x_axis.setRange(0, 10)
         self.x_axis.setTitleText('Current')
         self.rangeX = 10
 
         if self.log:
-            self.y_axis = qtch.QLogValueAxis()
+            self.y_axis = QLogValueAxis()
             self.y_axis.setBase(10)
             self.y_axis.setRange(1,self.max);
         else:
-            self.y_axis = qtch.QValueAxis()
+            self.y_axis = QValueAxis()
             self.y_axis.setRange(0,self.max)
 
         self.y_axis.setTitleText('Voltage')

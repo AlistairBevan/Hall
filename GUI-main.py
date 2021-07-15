@@ -1,13 +1,9 @@
 import sys
 import pyvisa
 import time
-from custom_widgets import (FieldControllerWidget,
-                            CurrentSourceWidget,
-                            VoltmeterWidget,
-                            SampleInfoWidget,
-                            BelowGraphWidget,
-                            ResistivityWidget,
-                            Column4Widget)
+from custom_widgets import (FieldControllerWidget, CurrentSourceWidget,
+                            VoltmeterWidget, SampleInfoWidget, BelowGraphWidget,
+                            ResistivityWidget, Column4Widget)
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -20,11 +16,16 @@ class MainWindow(qtw.QMainWindow):
         super().__init__()
         self.makeUI()
         self.connectButtons()
+        self.setupInstruments()
         self.show()
 
     def setupInstruments(self):
         '''set ups the instruments for use'''
         rm = pyvisa.ResourceManager()
+        # voltmeter = rm.open_resource('GPIB0::2::INSTR')
+        # scanner = rm.open_resource('GPIB0::7::INSTR')
+        # currentSource = rm.open_resource('GPIB0::12::INSTR')
+
 
     def makeUI(self):
         '''Constructs the visual components of the UI'''
@@ -32,7 +33,7 @@ class MainWindow(qtw.QMainWindow):
 
         cw = qtw.QTabWidget()#central widget (the outermost widget)
         self.setCentralWidget(cw)
-        self.hallWidget = qtw.QWidget()#central widget to contain all the hall UI
+        self.hallWidget = qtw.QWidget()#widget to contain all of the hall tab
         self.hallLayout = qtw.QHBoxLayout()#layout for the hall tab
 
         #make the first column
@@ -78,7 +79,7 @@ class MainWindow(qtw.QMainWindow):
         self.column4Widget = Column4Widget()
         self.hallLayout.addWidget(self.column4Widget)
 
-        self.hallWidget.setLayout(self.hallLayout)
+        self.hallWidget.setLayout(self.hallLayout)#sets the layout of out Halltab
         self.centralWidget().addTab(self.hallWidget, "Hall")
         self.resize(800,600)
 
@@ -88,9 +89,11 @@ class MainWindow(qtw.QMainWindow):
         self.belowGraph.abortBtn.clicked.connect(self.abort)
 
     def go(self):
+        '''run when you press go, sets up thread and starts it'''
         pass
 
     def abort(self):
+        '''stops the thread'''
         pass
 
 

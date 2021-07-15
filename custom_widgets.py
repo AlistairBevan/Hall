@@ -1,11 +1,14 @@
-from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
+from PyQt5.QtWidgets import (QPushButton,QFormLayout,QWidget,
+                             QLineEdit,QVBoxLayout,QSizePolicy,
+                             QGroupBox,QHBoxLayout,QComboBox,QFrame,
+                             QLabel,QSpacerItem)
+from PyQt5.QtGui import (QValidator,QDoubleValidator,QIntValidator)
+#from PyQt5.qtc import ()
 from sys import float_info, maxsize
 
 
 
-class MyDoubleValidator(qtg.QDoubleValidator):
+class MyDoubleValidator(QDoubleValidator):
 
     '''
     Fix for strange behavior of default QDoubleValidator used in
@@ -14,25 +17,25 @@ class MyDoubleValidator(qtg.QDoubleValidator):
     (needed some tweaking)
     '''
 
-    def __init__(self, bottom = float_info.min, \
-                 top = float_info.max, \
-                 decimals = float_info.dig, parent = None):
+    def __init__(self, bottom: float = float_info.min, \
+                 top:float = float_info.max, \
+                 decimals:int  = float_info.dig, parent: QWidget = None):
 
         super(MyDoubleValidator, self).__init__(bottom, top, decimals, parent)
 
-    def validate(self, input_value : str, pos : int):
+    def validate(self, input_value : str, pos : int) -> tuple:
         state, char, pos = super().validate(input_value, pos)
 
         if input_value == '' or input_value == '.':
-            return qtg.QValidator.Intermediate,char, pos
+            return QValidator.Intermediate,char, pos
 
-        if state != qtg.QValidator.State.Acceptable:
-            return qtg.QValidator.Invalid,char, pos
+        if state != QValidator.State.Acceptable:
+            return QValidator.Invalid,char, pos
 
-        return qtg.QValidator.Acceptable,char, pos
+        return QValidator.Acceptable,char, pos
 
 
-class ColoredButton(qtw.QPushButton):
+class ColoredButton(QPushButton):
     '''the default button to be used in the program
     (makes it easy to change the color of all buttons and so on)'''
     def __init__(self, *args, rgb: tuple = (64, 137, 255), **kwargs):
@@ -46,9 +49,9 @@ class ColoredButton(qtw.QPushButton):
         padding: 6px;
         }""")
 
-class MyGroupBox(qtw.QGroupBox):
-    '''custom groupbox to make the border darker and further style sheet changes
-    easier'''
+class MyGroupBox(QGroupBox):
+    '''custom groupbox to make the border darker and make
+    further style sheet changes easier'''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setStyleSheet("""QGroupBox {
@@ -66,14 +69,14 @@ class FieldControllerWidget(MyGroupBox):
     '''Widget for displaying the fieldController controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QFormLayout()
+        layout = QFormLayout()
 
-        self.fieldInput = qtw.QLineEdit('5000')
-        self.fieldInput.setValidator(qtg.QIntValidator())
+        self.fieldInput = QLineEdit('5000')
+        self.fieldInput.setValidator(QIntValidator())
         layout.addRow('Field (Gauss)',self.fieldInput)
 
-        self.delayInput = qtw.QLineEdit('10')
-        self.delayInput.setValidator(qtg.QDoubleValidator())
+        self.delayInput = QLineEdit('10')
+        self.delayInput.setValidator(QDoubleValidator())
         layout.addRow('Field Delay (sec)',self.delayInput)
         self.setMaximumSize(350,400)
         self.setLayout(layout)
@@ -82,19 +85,18 @@ class CurrentSourceWidget(MyGroupBox):
     '''Widget for displaying the current controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QFormLayout()
+        layout = QFormLayout()
 
-        self.currentInput = qtw.QLineEdit()
-        self.currentInput.setValidator(qtg.QDoubleValidator())
+        self.currentInput = QLineEdit()
+        self.currentInput.setValidator(QDoubleValidator())
         layout.addRow('Current (A)',self.currentInput)
 
-        self.dwellInput = qtw.QLineEdit()
+        self.dwellInput = QLineEdit()
         self.dwellInput.setValidator(MyDoubleValidator(0,999.9))
         layout.addRow('Dwell Time (ms) 3ms to 999.9ms',self.dwellInput)
 
-
-        self.vLimitInput = qtw.QLineEdit()
-        self.vLimitInput.setValidator(qtg.QDoubleValidator())
+        self.vLimitInput = QLineEdit()
+        self.vLimitInput.setValidator(QDoubleValidator())
         layout.addRow('V-Limit', self.vLimitInput)
 
         self.setMaximumSize(350,400)
@@ -104,14 +106,14 @@ class VoltmeterWidget(MyGroupBox):
     '''Widget for displaying the voltmeter controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QFormLayout()
+        layout = QFormLayout()
 
-        self.integratingInput = qtw.QLineEdit()
-        self.integratingInput.setValidator(qtg.QIntValidator())
+        self.integratingInput = QLineEdit()
+        self.integratingInput.setValidator(QIntValidator())
         layout.addRow('Integrating Time',self.integratingInput)
 
-        self.RangeInput = qtw.QLineEdit()
-        self.RangeInput.setValidator(qtg.QDoubleValidator())
+        self.RangeInput = QLineEdit()
+        self.RangeInput.setValidator(QDoubleValidator())
         layout.addRow('Range Control',self.RangeInput)
 
         self.setMaximumSize(350,400)
@@ -121,176 +123,176 @@ class SampleInfoWidget(MyGroupBox):
     '''Widget for sample inforamtion inputs'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QFormLayout()
+        layout = QFormLayout()
 
-        self.SampleIDInput = qtw.QLineEdit()
+        self.SampleIDInput = QLineEdit()
         layout.addRow('Sample ID',self.SampleIDInput)
 
-        self.TempInput = qtw.QLineEdit()
+        self.TempInput = QLineEdit()
         self.TempInput.setValidator(MyDoubleValidator(0))
         layout.addRow('Temp',self.TempInput)
         self.setLayout(layout)
 
-        self.thicknessInput = qtw.QLineEdit()
+        self.thicknessInput = QLineEdit()
         self.thicknessInput.setValidator(MyDoubleValidator(0))
         layout.addRow('Thickness (um)', self.thicknessInput)
 
-        self.dataPointsInput = qtw.QLineEdit()
+        self.dataPointsInput = QLineEdit()
         #this is the max value the validator will take
-        self.dataPointsInput.setValidator(qtg.QIntValidator(0,2147483647))
+        self.dataPointsInput.setValidator(QIntValidator(0,2147483647))
         layout.addRow('Field Delay (sec)',self.dataPointsInput)
 
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class ResistivityWidget(qtw.QFrame):
+class ResistivityWidget(QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        self.setFrameShape(qtw.QFrame.Box)
-        self.setFrameShadow(qtw.QFrame.Plain)
+        self.setFrameShape(QFrame.Box)
+        self.setFrameShadow(QFrame.Plain)
         self.setLineWidth(1)
-        layout = qtw.QVBoxLayout()
+        layout = QVBoxLayout()
 
 
-        layout = qtw.QVBoxLayout()
-        self.R1Lbl = qtw.QLabel('R1 (Ohm)')
+        layout = QVBoxLayout()
+        self.R1Lbl = QLabel('R1 (Ohm)')
         layout.addWidget(self.R1Lbl)
 
-        self.R1Display = qtw.QLineEdit()
+        self.R1Display = QLineEdit()
         self.R1Display.setReadOnly(True)
         layout.addWidget(self.R1Display)
 
-        self.R2Lbl = qtw.QLabel('R2 (Ohm)')
+        self.R2Lbl = QLabel('R2 (Ohm)')
         layout.addWidget(self.R2Lbl)
 
-        self.R2Display = qtw.QLineEdit()
+        self.R2Display = QLineEdit()
         self.R2Display.setReadOnly(True)
         layout.addWidget(self.R2Display)
 
-        self.Rxy1Lbl = qtw.QLabel('Rxy1 (Ohm)')
+        self.Rxy1Lbl = QLabel('Rxy1 (Ohm)')
         layout.addWidget(self.Rxy1Lbl)
 
-        self.Rxy1Display = qtw.QLineEdit()
+        self.Rxy1Display = QLineEdit()
         self.Rxy1Display.setReadOnly(True)
         layout.addWidget(self.Rxy1Display)
 
-        self.Rxy2Lbl = qtw.QLabel('Rxy2 (Ohm)')
+        self.Rxy2Lbl = QLabel('Rxy2 (Ohm)')
         layout.addWidget(self.Rxy2Lbl)
 
-        self.Rxy2Display = qtw.QLineEdit()
+        self.Rxy2Display = QLineEdit()
         self.Rxy2Display.setReadOnly(True)
         layout.addWidget(self.Rxy2Display)
 
-        self.Ratio1Lbl = qtw.QLabel('Ratio1')
+        self.Ratio1Lbl = QLabel('Ratio1')
         layout.addWidget(self.Ratio1Lbl)
 
-        self.Ratio1Display = qtw.QLineEdit()
+        self.Ratio1Display = QLineEdit()
         self.Ratio1Display.setReadOnly(True)
         layout.addWidget(self.Ratio1Display)
 
-        self.Ratio2Lbl = qtw.QLabel('Ratio2')
+        self.Ratio2Lbl = QLabel('Ratio2')
         layout.addWidget(self.Ratio2Lbl)
 
-        self.Ratio2Display = qtw.QLineEdit()
+        self.Ratio2Display = QLineEdit()
         self.Ratio2Display.setReadOnly(True)
         layout.addWidget(self.Ratio2Display)
 
-        self.FfactorLbl = qtw.QLabel('Ffactor')
+        self.FfactorLbl = QLabel('Ffactor')
         layout.addWidget(self.FfactorLbl)
 
-        self.FfactorDisplay = qtw.QLineEdit()
+        self.FfactorDisplay = QLineEdit()
         self.FfactorDisplay.setReadOnly(True)
         layout.addWidget(self.FfactorDisplay)
 
-        self.HallRatioLbl = qtw.QLabel('HallRatio')
+        self.HallRatioLbl = QLabel('HallRatio')
         layout.addWidget(self.HallRatioLbl)
 
-        self.HallRatioDisplay = qtw.QLineEdit()
+        self.HallRatioDisplay = QLineEdit()
         self.HallRatioDisplay.setReadOnly(True)
         layout.addWidget(self.HallRatioDisplay)
 
-        spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
-                                vPolicy = qtw.QSizePolicy.Expanding)
+        spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
+                                vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
         self.setLayout(layout)
         self.setMaximumSize(200,1000)
 
 
-class Column4Widget(qtw.QFrame):
+class Column4Widget(QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        self.setFrameShape(qtw.QFrame.Box)
-        self.setFrameShadow(qtw.QFrame.Plain)
+        self.setFrameShape(QFrame.Box)
+        self.setFrameShadow(QFrame.Plain)
         self.setLineWidth(1)
-        layout = qtw.QVBoxLayout()
+        layout = QVBoxLayout()
 
 
-        layout = qtw.QVBoxLayout()
-        self.AvgSheetResLbl = qtw.QLabel('Avg Sheet Res (Ohm)')
+        layout = QVBoxLayout()
+        self.AvgSheetResLbl = QLabel('Avg Sheet Res (Ohm)')
         layout.addWidget(self.AvgSheetResLbl)
 
-        self.AvgSheetResDisplay = qtw.QLineEdit()
+        self.AvgSheetResDisplay = QLineEdit()
         self.AvgSheetResDisplay.setReadOnly(True)
         layout.addWidget(self.AvgSheetResDisplay)
 
-        self.AvgTransResLbl = qtw.QLabel('Avg Trans Res (Ohm)')
+        self.AvgTransResLbl = QLabel('Avg Trans Res (Ohm)')
         layout.addWidget(self.AvgTransResLbl)
 
-        self.AvgTransResDisplay = qtw.QLineEdit()
+        self.AvgTransResDisplay = QLineEdit()
         self.AvgTransResDisplay.setReadOnly(True)
         layout.addWidget(self.AvgTransResDisplay)
 
-        self.AvgResLbl = qtw.QLabel('Avg Res (Ohm-cm)')
+        self.AvgResLbl = QLabel('Avg Res (Ohm-cm)')
         layout.addWidget(self.AvgResLbl)
 
-        self.AvgResDisplay = qtw.QLineEdit()
+        self.AvgResDisplay = QLineEdit()
         self.AvgResDisplay.setReadOnly(True)
         layout.addWidget(self.AvgResDisplay)
 
-        self.SheetConcLbl = qtw.QLabel('Sheet Conc (cm-2)')
+        self.SheetConcLbl = QLabel('Sheet Conc (cm-2)')
         layout.addWidget(self.SheetConcLbl)
 
-        self.SheetConcDisplay = qtw.QLineEdit()
+        self.SheetConcDisplay = QLineEdit()
         self.SheetConcDisplay.setReadOnly(True)
         layout.addWidget(self.SheetConcDisplay)
 
-        self.BulkConcLbl = qtw.QLabel('Bulk Conc (cm-3)')
+        self.BulkConcLbl = QLabel('Bulk Conc (cm-3)')
         layout.addWidget(self.BulkConcLbl)
 
-        self.BulkConcDisplay = qtw.QLineEdit()
+        self.BulkConcDisplay = QLineEdit()
         self.BulkConcDisplay.setReadOnly(True)
         layout.addWidget(self.BulkConcDisplay)
 
-        self.HallCoefLbl = qtw.QLabel('Hall Coef (cm3/C)')
+        self.HallCoefLbl = QLabel('Hall Coef (cm3/C)')
         layout.addWidget(self.HallCoefLbl)
 
-        self.HallCoefDisplay = qtw.QLineEdit()
+        self.HallCoefDisplay = QLineEdit()
         self.HallCoefDisplay.setReadOnly(True)
         layout.addWidget(self.HallCoefDisplay)
 
-        self.HallMobilityLbl = qtw.QLabel('Hall Mobility (cm2/Vs)')
+        self.HallMobilityLbl = QLabel('Hall Mobility (cm2/Vs)')
         layout.addWidget(self.HallMobilityLbl)
 
-        self.HallMobilityDisplay = qtw.QLineEdit()
+        self.HallMobilityDisplay = QLineEdit()
         self.HallMobilityDisplay.setReadOnly(True)
         layout.addWidget(self.HallMobilityDisplay)
 
-        spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
-                                vPolicy = qtw.QSizePolicy.Expanding)
+        spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
+                                vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
         self.setLayout(layout)
         self.setMaximumSize(200,1000)
 
 
-class BelowGraphWidget(qtw.QWidget):
+class BelowGraphWidget(QWidget):
     '''widget placed below the graph has buttons and a few other widgets'''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QVBoxLayout()
+        layout = QVBoxLayout()
 
-        subLayout1 = qtw.QHBoxLayout()
+        subLayout1 = QHBoxLayout()
         self.goBtn = ColoredButton('GO')
         self.goBtn.setMinimumSize(400,55)
         subLayout1.addWidget(self.goBtn)
@@ -300,11 +302,11 @@ class BelowGraphWidget(qtw.QWidget):
         subLayout1.addWidget(self.abortBtn)
 
 
-        subLayout2 = qtw.QFormLayout()
-        self.pathInput = qtw.QLineEdit("C/Users/lw5968/Documents/Hall Data/test")
+        subLayout2 = QFormLayout()
+        self.pathInput = QLineEdit("C/Users/lw5968/Documents/Hall Data/test")
         subLayout2.addRow('Output file path',self.pathInput)
 
-        self.rSquareDisplay = qtw.QLineEdit()
+        self.rSquareDisplay = QLineEdit()
         self.rSquareDisplay.setReadOnly(True)
         subLayout2.addRow('R-Square Value',self.rSquareDisplay)
 
