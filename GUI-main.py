@@ -5,11 +5,13 @@ from custom_widgets import (StandardButton,
                             FieldControllerWidget,
                             CurrentSourceWidget,
                             VoltmeterWidget,
-                            SampleInfoWidget)
+                            SampleInfoWidget,
+                            BelowGraphWidget,
+                            ResultDisplayWidget)
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-
+from graphing import View
 
 class MainWindow(qtw.QMainWindow):
 
@@ -52,23 +54,26 @@ class MainWindow(qtw.QMainWindow):
         self.column2Layout = qtw.QVBoxLayout()
         self.hallLayout.addLayout(self.column2Layout)
 
-        spacer = qtw.QWidget()
-        spacer.setSizePolicy(qtw.QSizePolicy.Expanding,qtw.QSizePolicy.Expanding)
-        self.column2Layout.addWidget(spacer)
+        #add the graph
+        self.IV_plot = View()
+        self.IV_plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
+                                    qtw.QSizePolicy.MinimumExpanding)
+        self.column2Layout.addWidget(self.IV_plot)
 
-        self.goBtn = StandardButton('GO')
-        self.goBtn.setMinimumSize(200,55)
-        self.column2Layout.addWidget(self.goBtn)
+        #add the stuff below the graph
+        subgraph = BelowGraphWidget()
+        self.column2Layout.addWidget(subgraph)
 
-        self.abortBtn = StandardButton('Abort', rgb = (255,0,0))
-        self.abortBtn.setMinimumSize(200,55)
-        self.column2Layout.addWidget(self.abortBtn)
 
         self.hallWidget.setLayout(self.hallLayout)
         self.centralWidget().addTab(self.hallWidget, "Hall")
 
+        self.column3Layout = qtw.QVBoxLayout()
+        placeHolder = ResultDisplayWidget()
+        self.column3Layout.addWidget(placeHolder)
+        self.hallLayout.addLayout(self.column3Layout)
 
-        self.resize(600,600)
+        self.resize(800,600)
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
