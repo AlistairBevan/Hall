@@ -1,13 +1,13 @@
 import sys
 import pyvisa
 import time
-from custom_widgets import (StandardButton,
-                            FieldControllerWidget,
+from custom_widgets import (FieldControllerWidget,
                             CurrentSourceWidget,
                             VoltmeterWidget,
                             SampleInfoWidget,
                             BelowGraphWidget,
-                            ResultDisplayWidget)
+                            ResistivityWidget,
+                            Column4Widget)
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -19,6 +19,7 @@ class MainWindow(qtw.QMainWindow):
         '''MainWindow Constructor'''
         super().__init__()
         self.makeUI()
+        self.connectButtons()
         self.show()
 
     def setupInstruments(self):
@@ -49,6 +50,10 @@ class MainWindow(qtw.QMainWindow):
         #UI section for current
         self.currentWidget = CurrentSourceWidget('Current Source - Keithley 220')
         self.column1Layout.addWidget(self.currentWidget)
+        #add a spacer on the bottom
+        spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
+                                vPolicy = qtw.QSizePolicy.Expanding)
+        self.column1Layout.addItem(spacer)
 
         #make the second column
         self.column2Layout = qtw.QVBoxLayout()
@@ -61,35 +66,32 @@ class MainWindow(qtw.QMainWindow):
         self.column2Layout.addWidget(self.IV_plot)
 
         #add the stuff below the graph
-        subgraph = BelowGraphWidget()
-        self.column2Layout.addWidget(subgraph)
+        self.belowGraph = BelowGraphWidget()
+        self.column2Layout.addWidget(self.belowGraph)
 
+        #add the third column
+        self.resistivityWidget = ResistivityWidget()
+        self.hallLayout.addWidget(self.resistivityWidget)
+
+        #add the fourth column
+        self.column4Widget = Column4Widget()
+        self.hallLayout.addWidget(self.column4Widget)
 
         self.hallWidget.setLayout(self.hallLayout)
         self.centralWidget().addTab(self.hallWidget, "Hall")
-
-        self.column3Layout = qtw.QVBoxLayout()
-        placeHolder = ResultDisplayWidget()
-        self.column3Layout.addWidget(placeHolder)
-        self.hallLayout.addLayout(self.column3Layout)
-
         self.resize(800,600)
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
-        self.magnetButton.clicked.connect(flipMagnet)
+        self.belowGraph.goBtn.clicked.connect(self.go)
+        self.belowGraph.abortBtn.clicked.connect(self.abort)
 
-    def flipMagnet(self):
-        '''logic for turning the magnet on and off'''
-        if isOn:
-            self.fieldController.write_ascii_values('SO4')
-            time.sleep(0.2)
-            self.fieldController.write_ascii_values('SO0')
-            time.sleep(2)
-            self.fieldController.write_ascii_values('CF', data)
+    def go(self):
+        pass
 
-        else:
-            self.fieldController.write_ascii_values('ST')
+    def abort(self):
+        pass
+
 
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)

@@ -3,6 +3,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from sys import float_info, maxsize
 
+
+
 class MyDoubleValidator(qtg.QDoubleValidator):
 
     '''
@@ -30,7 +32,7 @@ class MyDoubleValidator(qtg.QDoubleValidator):
         return qtg.QValidator.Acceptable,char, pos
 
 
-class StandardButton(qtw.QPushButton):
+class ColoredButton(qtw.QPushButton):
     '''the default button to be used in the program
     (makes it easy to change the color of all buttons and so on)'''
     def __init__(self, *args, rgb: tuple = (64, 137, 255), **kwargs):
@@ -44,7 +46,23 @@ class StandardButton(qtw.QPushButton):
         padding: 6px;
         }""")
 
-class FieldControllerWidget(qtw.QGroupBox):
+class MyGroupBox(qtw.QGroupBox):
+    '''custom groupbox to make the border darker and further style sheet changes
+    easier'''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setStyleSheet("""QGroupBox {
+          border: 1px solid black;
+          margin-top: 4px;
+        }
+
+        QGroupBox:title{
+          top: -8px;
+          left: 10px;
+          padding-top: 2px;
+        }""")
+
+class FieldControllerWidget(MyGroupBox):
     '''Widget for displaying the fieldController controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -60,7 +78,7 @@ class FieldControllerWidget(qtw.QGroupBox):
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class CurrentSourceWidget(qtw.QGroupBox):
+class CurrentSourceWidget(MyGroupBox):
     '''Widget for displaying the current controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -82,7 +100,7 @@ class CurrentSourceWidget(qtw.QGroupBox):
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class VoltmeterWidget(qtw.QGroupBox):
+class VoltmeterWidget(MyGroupBox):
     '''Widget for displaying the voltmeter controls'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -99,7 +117,7 @@ class VoltmeterWidget(qtw.QGroupBox):
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class SampleInfoWidget(qtw.QGroupBox):
+class SampleInfoWidget(MyGroupBox):
     '''Widget for sample inforamtion inputs'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -125,54 +143,146 @@ class SampleInfoWidget(qtw.QGroupBox):
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class ResultDisplayWidget(qtw.QGroupBox):
+class ResistivityWidget(qtw.QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
-        layout = qtw.QHBoxLayout()
-        self.setLayout(layout)
+        self.setFrameShape(qtw.QFrame.Box)
+        self.setFrameShadow(qtw.QFrame.Plain)
+        self.setLineWidth(1)
+        layout = qtw.QVBoxLayout()
 
-        self.leftColumn = qtw.QVBoxLayout()
-        self.R1 = qtw.QLabel('R1 (Ohm)')
-        self.leftColumn.addWidget(self.R1)
+
+        layout = qtw.QVBoxLayout()
+        self.R1Lbl = qtw.QLabel('R1 (Ohm)')
+        layout.addWidget(self.R1Lbl)
 
         self.R1Display = qtw.QLineEdit()
         self.R1Display.setReadOnly(True)
-        self.leftColumn.addWidget(self.R1Display)
+        layout.addWidget(self.R1Display)
 
-        self.R2 = qtw.QLabel('R2 (Ohm)')
-        self.leftColumn.addWidget(self.R2)
+        self.R2Lbl = qtw.QLabel('R2 (Ohm)')
+        layout.addWidget(self.R2Lbl)
 
         self.R2Display = qtw.QLineEdit()
         self.R2Display.setReadOnly(True)
-        self.leftColumn.addWidget(self.R2Display)
+        layout.addWidget(self.R2Display)
 
-        self.Rxy2 = qtw.QLabel('Rxy2 (Ohm)')
-        self.leftColumn.addWidget(self.Rxy2)
+        self.Rxy1Lbl = qtw.QLabel('Rxy1 (Ohm)')
+        layout.addWidget(self.Rxy1Lbl)
+
+        self.Rxy1Display = qtw.QLineEdit()
+        self.Rxy1Display.setReadOnly(True)
+        layout.addWidget(self.Rxy1Display)
+
+        self.Rxy2Lbl = qtw.QLabel('Rxy2 (Ohm)')
+        layout.addWidget(self.Rxy2Lbl)
 
         self.Rxy2Display = qtw.QLineEdit()
         self.Rxy2Display.setReadOnly(True)
-        self.leftColumn.addWidget(self.Rxy2Display)
+        layout.addWidget(self.Rxy2Display)
 
-        self.Ratio1 = qtw.QLabel('Ratio1 (Ohm)')
-        self.leftColumn.addWidget(self.Ratio1)
+        self.Ratio1Lbl = qtw.QLabel('Ratio1')
+        layout.addWidget(self.Ratio1Lbl)
 
         self.Ratio1Display = qtw.QLineEdit()
         self.Ratio1Display.setReadOnly(True)
-        self.leftColumn.addWidget(self.Ratio1Display)
+        layout.addWidget(self.Ratio1Display)
 
-        self.Ratio2 = qtw.QLabel('Ratio2 (Ohm)')
-        self.leftColumn.addWidget(self.Ratio2)
+        self.Ratio2Lbl = qtw.QLabel('Ratio2')
+        layout.addWidget(self.Ratio2Lbl)
 
         self.Ratio2Display = qtw.QLineEdit()
         self.Ratio2Display.setReadOnly(True)
-        self.leftColumn.addWidget(self.Ratio2Display)
+        layout.addWidget(self.Ratio2Display)
+
+        self.FfactorLbl = qtw.QLabel('Ffactor')
+        layout.addWidget(self.FfactorLbl)
+
+        self.FfactorDisplay = qtw.QLineEdit()
+        self.FfactorDisplay.setReadOnly(True)
+        layout.addWidget(self.FfactorDisplay)
+
+        self.HallRatioLbl = qtw.QLabel('HallRatio')
+        layout.addWidget(self.HallRatioLbl)
+
+        self.HallRatioDisplay = qtw.QLineEdit()
+        self.HallRatioDisplay.setReadOnly(True)
+        layout.addWidget(self.HallRatioDisplay)
 
         spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
                                 vPolicy = qtw.QSizePolicy.Expanding)
-        self.leftColumn.addItem(spacer)
+        layout.addItem(spacer)
+        self.setLayout(layout)
         self.setMaximumSize(200,1000)
-        layout.addLayout(self.leftColumn)
+
+
+class Column4Widget(qtw.QFrame):
+    '''widget to display the results, located on the right side'''
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFrameShape(qtw.QFrame.Box)
+        self.setFrameShadow(qtw.QFrame.Plain)
+        self.setLineWidth(1)
+        layout = qtw.QVBoxLayout()
+
+
+        layout = qtw.QVBoxLayout()
+        self.AvgSheetResLbl = qtw.QLabel('Avg Sheet Res (Ohm)')
+        layout.addWidget(self.AvgSheetResLbl)
+
+        self.AvgSheetResDisplay = qtw.QLineEdit()
+        self.AvgSheetResDisplay.setReadOnly(True)
+        layout.addWidget(self.AvgSheetResDisplay)
+
+        self.AvgTransResLbl = qtw.QLabel('Avg Trans Res (Ohm)')
+        layout.addWidget(self.AvgTransResLbl)
+
+        self.AvgTransResDisplay = qtw.QLineEdit()
+        self.AvgTransResDisplay.setReadOnly(True)
+        layout.addWidget(self.AvgTransResDisplay)
+
+        self.AvgResLbl = qtw.QLabel('Avg Res (Ohm-cm)')
+        layout.addWidget(self.AvgResLbl)
+
+        self.AvgResDisplay = qtw.QLineEdit()
+        self.AvgResDisplay.setReadOnly(True)
+        layout.addWidget(self.AvgResDisplay)
+
+        self.SheetConcLbl = qtw.QLabel('Sheet Conc (cm-2)')
+        layout.addWidget(self.SheetConcLbl)
+
+        self.SheetConcDisplay = qtw.QLineEdit()
+        self.SheetConcDisplay.setReadOnly(True)
+        layout.addWidget(self.SheetConcDisplay)
+
+        self.BulkConcLbl = qtw.QLabel('Bulk Conc (cm-3)')
+        layout.addWidget(self.BulkConcLbl)
+
+        self.BulkConcDisplay = qtw.QLineEdit()
+        self.BulkConcDisplay.setReadOnly(True)
+        layout.addWidget(self.BulkConcDisplay)
+
+        self.HallCoefLbl = qtw.QLabel('Hall Coef (cm3/C)')
+        layout.addWidget(self.HallCoefLbl)
+
+        self.HallCoefDisplay = qtw.QLineEdit()
+        self.HallCoefDisplay.setReadOnly(True)
+        layout.addWidget(self.HallCoefDisplay)
+
+        self.HallMobilityLbl = qtw.QLabel('Hall Mobility (cm2/Vs)')
+        layout.addWidget(self.HallMobilityLbl)
+
+        self.HallMobilityDisplay = qtw.QLineEdit()
+        self.HallMobilityDisplay.setReadOnly(True)
+        layout.addWidget(self.HallMobilityDisplay)
+
+        spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
+                                vPolicy = qtw.QSizePolicy.Expanding)
+        layout.addItem(spacer)
+        self.setLayout(layout)
+        self.setMaximumSize(200,1000)
+
 
 class BelowGraphWidget(qtw.QWidget):
     '''widget placed below the graph has buttons and a few other widgets'''
@@ -181,11 +291,11 @@ class BelowGraphWidget(qtw.QWidget):
         layout = qtw.QVBoxLayout()
 
         subLayout1 = qtw.QHBoxLayout()
-        self.goBtn = StandardButton('GO')
+        self.goBtn = ColoredButton('GO')
         self.goBtn.setMinimumSize(400,55)
         subLayout1.addWidget(self.goBtn)
 
-        self.abortBtn = StandardButton('Abort', rgb = (255,0,0))
+        self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
         self.abortBtn.setMinimumSize(400,55)
         subLayout1.addWidget(self.abortBtn)
 
