@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QApplication, QGraphicsItem, QGraphicsScene, QGraphi
 
 #this is the little messageBox I didn't make this found it on the internet
 class Callout(QGraphicsItem):
-
+    '''how the cursors are drawn'''
     def __init__(self, parent: QChart):
         super().__init__()
         self.m_chart: QChart = parent
@@ -109,7 +109,7 @@ class Callout(QGraphicsItem):
 
 
 class View(QGraphicsView):
-
+    '''graph class with cursors'''
     max = 10
 
     def __init__(self, parent=None, name = '', log = False):
@@ -148,6 +148,7 @@ class View(QGraphicsView):
 
         self.x_axis = qtch.QValueAxis()
         self.x_axis.setRange(0, 10)
+        self.x_axis.setTitleText('Current')
         self.rangeX = 10
 
         if self.log:
@@ -158,6 +159,7 @@ class View(QGraphicsView):
             self.y_axis = qtch.QValueAxis()
             self.y_axis.setRange(0,self.max)
 
+        self.y_axis.setTitleText('Voltage')
         self.m_chart.setAxisX(self.x_axis,self.series)
         self.m_chart.setAxisY(self.y_axis,self.series)
 

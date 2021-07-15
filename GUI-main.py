@@ -23,6 +23,7 @@ class MainWindow(qtw.QMainWindow):
         self.show()
 
     def setupInstruments(self):
+        '''set ups the instruments for use'''
         rm = pyvisa.ResourceManager()
 
     def makeUI(self):

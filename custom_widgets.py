@@ -68,11 +68,11 @@ class FieldControllerWidget(MyGroupBox):
         super().__init__(*args, **kwargs)
         layout = qtw.QFormLayout()
 
-        self.fieldInput = qtw.QLineEdit()
+        self.fieldInput = qtw.QLineEdit('5000')
         self.fieldInput.setValidator(qtg.QIntValidator())
         layout.addRow('Field (Gauss)',self.fieldInput)
 
-        self.delayInput = qtw.QLineEdit()
+        self.delayInput = qtw.QLineEdit('10')
         self.delayInput.setValidator(qtg.QDoubleValidator())
         layout.addRow('Field Delay (sec)',self.delayInput)
         self.setMaximumSize(350,400)
@@ -108,11 +108,11 @@ class VoltmeterWidget(MyGroupBox):
 
         self.integratingInput = qtw.QLineEdit()
         self.integratingInput.setValidator(qtg.QIntValidator())
-        layout.addRow('Field (Gauss)',self.integratingInput)
+        layout.addRow('Integrating Time',self.integratingInput)
 
         self.RangeInput = qtw.QLineEdit()
         self.RangeInput.setValidator(qtg.QDoubleValidator())
-        layout.addRow('Field Delay (sec)',self.RangeInput)
+        layout.addRow('Range Control',self.RangeInput)
 
         self.setMaximumSize(350,400)
         self.setLayout(layout)
