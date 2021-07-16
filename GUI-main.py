@@ -6,6 +6,7 @@ from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+from datetime import datetime
 from graphing import View
 
 class MainWindow(qtw.QMainWindow):
@@ -90,6 +91,9 @@ class MainWindow(qtw.QMainWindow):
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
 
+    def getInputDict(self):
+        pass
+        
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
         pass

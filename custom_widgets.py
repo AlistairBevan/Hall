@@ -261,6 +261,12 @@ class FitResults1(QFrame):
         self.setMinimumSize(100,500)
         self.setMaximumSize(200,1000)
 
+    def textDict(self):
+        dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
+                'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
+                'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
+                'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
+
 
 class FitResults2(QFrame):
     '''widget to display the results, located on the right side'''
@@ -375,10 +381,17 @@ class BelowGraphWidget(QWidget):
         frameLayout.addWidget(self.box8)
 
         self.rContainer.setLayout(frameLayout)
-
-
         layout.addWidget(self.rContainer)
         self.setLayout(layout)
+
+    def textDict(self):
+        '''returns a dictionary of all the text in this widget for ease of access later'''
+        dict = {'box1': self.box1.text(), 'box2': self.box2.text(),
+                'box3': self.box3.text(), 'box4': self.box4.text(),
+                'box5': self.box5.text(), 'box6': self.box6.text(),
+                'box7': self.box7.text(), 'box8': self.box8.text(),
+                'path': self.pathInput.text()}
+        return dict
 
 class IVColumn1(QWidget):
 

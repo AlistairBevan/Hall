@@ -10,8 +10,8 @@ class HallWorker(QObject):
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
         scanner:Resource = None, intgrlTime: int = 0, rangeCtrl: str = '',
-        current: float = 0, dwell: float = 0, vLim: float = 0, sampleID: str = '',
-        temp: float = 0, thickness: float = 0, numPoints: int = 1, field: int = 0,
+        current: float = 0, dwell: float = 0, vLim: float = 0, numPoints: int = 1,
+        field: int = 0,
         fieldDelay: float = 0) -> None:
         '''Constructor for the class; stores the relevant information for the thread
         to use'''
@@ -23,9 +23,6 @@ class HallWorker(QObject):
         self.current = current
         self.dwell = dwell
         self.vLim = vLim
-        self.sampleID = sampleID
-        self.temp = temp
-        self.thickness = thickness
         self.numPoints = numPoints
         self.field = field
         self.fieldDelay = fieldDelay
