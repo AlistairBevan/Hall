@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QGraphicsItem, QGraphicsScene, QGraphi
 
 #this is the little messageBox I didn't make this found it on the internet
 class Callout(QGraphicsItem):
-    '''how the cursors are drawn'''
+    '''how the cursors are drawn, you probably shouldn't mess with this'''
     def __init__(self, parent: QChart):
         super().__init__()
         self.m_chart: QChart = parent
@@ -109,6 +109,7 @@ class View(QGraphicsView):
     max = 10
 
     def __init__(self, parent=None, name = '', log = False):
+        '''sets up the chart and axis for use'''
         super().__init__(parent)
         self.m_callouts: List[Callout] = []
         self.setDragMode(QGraphicsView.NoDrag)
@@ -166,6 +167,7 @@ class View(QGraphicsView):
         self.setMouseTracking(True)
 
     def resizeEvent(self, event: QResizeEvent):
+        '''how to handle graph resizing'''
         if scene := self.scene():
             scene.setSceneRect(QRectF(QPointF(0, 0), QSizeF(event.size())))
             self.m_chart.resize(QSizeF(event.size()))
@@ -178,12 +180,16 @@ class View(QGraphicsView):
         super().resizeEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
+        '''how to handle mouse movement (updating X and Y at the bottom of the
+        graph)'''
         from_chart = self.m_chart.mapToValue(event.pos())
         self.m_coordX.setText(f"X: {from_chart.x():.3f}")
         self.m_coordY.setText(f"Y: {from_chart.y():.3f}")
         super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+        '''how to handle mouse presses, i.e. attaching callout on left click
+        and deleting on right click'''
 
         if event.buttons() & Qt.LeftButton & self.m_tooltip.isVisible():
             self.keep_callout()
@@ -200,6 +206,7 @@ class View(QGraphicsView):
 
     #draws the little boxes that show the point value
     def tooltip(self, point: QPointF, state: bool):
+        '''the process of attaching a callout, where its attached what it says etc.'''
         if not self.m_tooltip:
             self.m_tooltip = Callout(self.m_chart)
 
@@ -218,6 +225,7 @@ class View(QGraphicsView):
 
     #pins the callout to the chart
     def keep_callout(self):
+        '''the pinning of a callout and storing it in a list'''
         self.m_callouts.append(self.m_tooltip)
         self.m_tooltip = Callout(self.m_chart)
         self.scene().addItem(self.m_tooltip)
@@ -225,11 +233,13 @@ class View(QGraphicsView):
 
     #removes the last pinned callout
     def remove_callout(self):
+        '''popping the last callout from list and removing from chart'''
         if len(self.m_callouts) != 0:
             self.scene().removeItem(self.m_callouts.pop())
 
     #adds a point and scales the axis if necessary
     def refresh_stats(self,xdata,ydata):
+        '''add data point'''
         #keep track of the data for cursor
         self.xdata.append(xdata)
         self.ydata.append(ydata)
@@ -245,12 +255,13 @@ class View(QGraphicsView):
         self.series.append(xdata,ydata)
 
     def set_xlim(self,min,max):
+        '''set the x range'''
         self.x_axis.setRange(min, max)
         self.rangeX = max - min
 
     #resets the plot
     def cla(self):
-
+        '''clear the plots of data'''
         self.ydata = []
         self.xdata = []
         self.max = 10

@@ -108,12 +108,22 @@ class VoltmeterWidget(MyGroupBox):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
 
-        self.integratingInput = QLineEdit()
-        self.integratingInput.setValidator(QIntValidator())
+        self.integratingInput = QComboBox()
+        self.integratingInput.addItem('~2s')
+        self.integratingInput.addItem('~5s')
+        self.integratingInput.addItem('~10s')
+        self.integratingInput.addItem('~20s')
+        self.integratingInput.setCurrentIndex(1)
         layout.addRow('Integrating Time',self.integratingInput)
 
-        self.RangeInput = QLineEdit()
-        self.RangeInput.setValidator(QDoubleValidator())
+        self.RangeInput = QComboBox()
+        self.RangeInput.addItem('Enable Auto-Range')
+        self.RangeInput.addItem('3mV Range')
+        self.RangeInput.addItem('30mV Range')
+        self.RangeInput.addItem('300mV Range')
+        self.RangeInput.addItem('3V Range')
+        self.RangeInput.addItem('30V Range')
+        self.RangeInput.addItem('Disable Auto-Range')
         layout.addRow('Range Control',self.RangeInput)
 
         self.setMaximumSize(350,400)
@@ -145,7 +155,39 @@ class SampleInfoWidget(MyGroupBox):
         self.setMaximumSize(350,400)
         self.setLayout(layout)
 
-class ResistivityWidget(QFrame):
+class Inputs(QWidget):
+    '''column1 of the Hall tab'''
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        #make the first column
+        layout = QVBoxLayout()
+        #UI section for sample information
+        self.sampleInfoWidget = SampleInfoWidget('Sample Information')
+        layout.addWidget(self.sampleInfoWidget)
+        #UI section for fieldController
+        self.fieldControllerWidget = FieldControllerWidget('Field Controller B-H 15')
+        layout.addWidget(self.fieldControllerWidget)
+        #UI section for Voltmeter
+        self.voltmeterWidget = VoltmeterWidget('Voltmeter controls - Keithley 182')
+        layout.addWidget(self.voltmeterWidget)
+        #UI section for current
+        self.currentWidget = CurrentSourceWidget('Current Source - Keithley 220')
+        layout.addWidget(self.currentWidget)
+        #add the buttons
+        self.goBtn = ColoredButton('GO')
+        self.goBtn.setMinimumSize(400,55)
+        layout.addWidget(self.goBtn)
+        self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
+        self.abortBtn.setMinimumSize(400,55)
+        layout.addWidget(self.abortBtn)
+        #add a spacer on the bottom
+        spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
+                                vPolicy = QSizePolicy.Expanding)
+        layout.addItem(spacer)
+        self.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Expanding)
+        self.setLayout(layout)
+
+class FitResults1(QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -220,7 +262,7 @@ class ResistivityWidget(QFrame):
         self.setMaximumSize(200,1000)
 
 
-class Column4Widget(QFrame):
+class FitResults2(QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
@@ -364,7 +406,12 @@ class IVColumn1(QWidget):
         self.resistanceDisplay = QLineEdit('0')
         layout.addWidget(self.resistanceDisplay)
 
+        self.goBtn = ColoredButton('Go')
+        self.goBtn.setMinimumSize(400,55)
+        layout.addWidget(self.goBtn)
+
         self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
+        self.abortBtn.setMinimumSize(400,55)
         layout.addWidget(self.abortBtn)
 
         spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,

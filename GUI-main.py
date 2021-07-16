@@ -1,10 +1,8 @@
 import sys
 import pyvisa
 import time
-from custom_widgets import (FieldControllerWidget, CurrentSourceWidget,
-                            VoltmeterWidget, SampleInfoWidget, BelowGraphWidget,
-                            ResistivityWidget, Column4Widget, ColoredButton,
-                            IVColumn1)
+from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
+                            ColoredButton,IVColumn1)
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -37,33 +35,11 @@ class MainWindow(qtw.QMainWindow):
         self.hallWidget = qtw.QWidget()#widget to contain all of the hall tab
         self.hallLayout = qtw.QHBoxLayout()#layout for the hall tab
 
+        #start making the first tab
         #make the first column
-        self.column1Layout = qtw.QVBoxLayout()
-        self.hallLayout.addLayout(self.column1Layout)
+        self.hallInputs = Inputs()
 
-        #UI section for sample information
-        self.sampleInfoWidget = SampleInfoWidget('Sample Information')
-        self.column1Layout.addWidget(self.sampleInfoWidget)
-        #UI section for fieldController
-        self.fieldControllerWidget = FieldControllerWidget('Field Controller B-H 15')
-        self.column1Layout.addWidget(self.fieldControllerWidget)
-        #UI section for Voltmeter
-        self.voltmeterWidget = VoltmeterWidget('Voltmeter controls - Keithley 182')
-        self.column1Layout.addWidget(self.voltmeterWidget)
-        #UI section for current
-        self.currentWidget = CurrentSourceWidget('Current Source - Keithley 220')
-        self.column1Layout.addWidget(self.currentWidget)
-        #add the buttons
-        self.goBtn = ColoredButton('GO')
-        self.goBtn.setMinimumSize(400,55)
-        self.column1Layout.addWidget(self.goBtn)
-        self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
-        self.abortBtn.setMinimumSize(400,55)
-        self.column1Layout.addWidget(self.abortBtn)
-        #add a spacer on the bottom
-        spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
-                                vPolicy = qtw.QSizePolicy.Expanding)
-        self.column1Layout.addItem(spacer)
+        self.hallLayout.addWidget(self.hallInputs)
 
         #make the second column
         self.column2Layout = qtw.QVBoxLayout()
@@ -80,12 +56,12 @@ class MainWindow(qtw.QMainWindow):
         self.column2Layout.addWidget(self.belowGraph)
 
         #add the third column
-        self.resistivityWidget = ResistivityWidget()
-        self.hallLayout.addWidget(self.resistivityWidget)
+        self.fitResults1 = FitResults1()
+        self.hallLayout.addWidget(self.fitResults1)
 
         #add the fourth column
-        self.column4Widget = Column4Widget()
-        self.hallLayout.addWidget(self.column4Widget)
+        self.fitResults2 = FitResults2()
+        self.hallLayout.addWidget(self.fitResults2)
 
         self.hallWidget.setLayout(self.hallLayout)#sets the layout of out Halltab
         self.centralWidget().addTab(self.hallWidget, "Hall-Program")
@@ -110,19 +86,22 @@ class MainWindow(qtw.QMainWindow):
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
-        self.goBtn.clicked.connect(self.go)
-        self.abortBtn.clicked.connect(self.abort)
+        pass
+        self.hallInputs.goBtn.clicked.connect(self.hallGo)
+        self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
 
-    def go(self):
+    def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
         pass
 
-    def abort(self):
+    def hallAbort(self):
         '''stops the thread'''
         pass
 
 
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)
+    print(qtw.QStyleFactory.keys())
+    app.setStyle('Fusion')
     mw = MainWindow()
     sys.exit(app.exec())
