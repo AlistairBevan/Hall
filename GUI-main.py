@@ -3,7 +3,8 @@ import pyvisa
 import time
 from custom_widgets import (FieldControllerWidget, CurrentSourceWidget,
                             VoltmeterWidget, SampleInfoWidget, BelowGraphWidget,
-                            ResistivityWidget, Column4Widget)
+                            ResistivityWidget, Column4Widget, ColoredButton,
+                            IVColumn1)
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -20,7 +21,7 @@ class MainWindow(qtw.QMainWindow):
         self.show()
 
     def setupInstruments(self):
-        '''set ups the instruments for use'''
+        '''sets up the instruments for use'''
         rm = pyvisa.ResourceManager()
         # voltmeter = rm.open_resource('GPIB0::2::INSTR')
         # scanner = rm.open_resource('GPIB0::7::INSTR')
@@ -52,6 +53,13 @@ class MainWindow(qtw.QMainWindow):
         #UI section for current
         self.currentWidget = CurrentSourceWidget('Current Source - Keithley 220')
         self.column1Layout.addWidget(self.currentWidget)
+        #add the buttons
+        self.goBtn = ColoredButton('GO')
+        self.goBtn.setMinimumSize(400,55)
+        self.column1Layout.addWidget(self.goBtn)
+        self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
+        self.abortBtn.setMinimumSize(400,55)
+        self.column1Layout.addWidget(self.abortBtn)
         #add a spacer on the bottom
         spacer = qtw.QSpacerItem(100,100, hPolicy = qtw.QSizePolicy.Preferred,
                                 vPolicy = qtw.QSizePolicy.Expanding)
@@ -62,10 +70,10 @@ class MainWindow(qtw.QMainWindow):
         self.hallLayout.addLayout(self.column2Layout)
 
         #add the graph
-        self.IV_plot = View()
-        self.IV_plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
+        self.hall_plot = View()
+        self.hall_plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                     qtw.QSizePolicy.MinimumExpanding)
-        self.column2Layout.addWidget(self.IV_plot)
+        self.column2Layout.addWidget(self.hall_plot)
 
         #add the stuff below the graph
         self.belowGraph = BelowGraphWidget()
@@ -80,13 +88,30 @@ class MainWindow(qtw.QMainWindow):
         self.hallLayout.addWidget(self.column4Widget)
 
         self.hallWidget.setLayout(self.hallLayout)#sets the layout of out Halltab
-        self.centralWidget().addTab(self.hallWidget, "Hall")
+        self.centralWidget().addTab(self.hallWidget, "Hall-Program")
+
+        #make the IV tab next
+        self.IVWidget = qtw.QWidget()
+        self.IVLayout = qtw.QHBoxLayout()
+
+        self.IVColumn1 = IVColumn1()
+        self.IVLayout.addWidget(self.IVColumn1)
+
+        self.IVColumn2 = qtw.QVBoxLayout()
+        self.IVLayout.addLayout(self.IVColumn2)
+        self.IV_Plot = View()
+        self.IV_Plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
+                                    qtw.QSizePolicy.MinimumExpanding)
+        self.IVColumn2.addWidget(self.IV_Plot)
+        self.IVWidget.setLayout(self.IVLayout)
+
+        self.centralWidget().addTab(self.IVWidget, "IV-Test")
         self.resize(800,600)
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
-        self.belowGraph.goBtn.clicked.connect(self.go)
-        self.belowGraph.abortBtn.clicked.connect(self.abort)
+        self.goBtn.clicked.connect(self.go)
+        self.abortBtn.clicked.connect(self.abort)
 
     def go(self):
         '''run when you press go, sets up thread and starts it'''

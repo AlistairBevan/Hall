@@ -87,15 +87,15 @@ class CurrentSourceWidget(MyGroupBox):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
 
-        self.currentInput = QLineEdit()
+        self.currentInput = QLineEdit('1e-6')
         self.currentInput.setValidator(QDoubleValidator())
         layout.addRow('Current (A)',self.currentInput)
 
-        self.dwellInput = QLineEdit()
+        self.dwellInput = QLineEdit('1')
         self.dwellInput.setValidator(MyDoubleValidator(0,999.9))
         layout.addRow('Dwell Time (ms) 3ms to 999.9ms',self.dwellInput)
 
-        self.vLimitInput = QLineEdit()
+        self.vLimitInput = QLineEdit('10')
         self.vLimitInput.setValidator(QDoubleValidator())
         layout.addRow('V-Limit', self.vLimitInput)
 
@@ -128,7 +128,7 @@ class SampleInfoWidget(MyGroupBox):
         self.SampleIDInput = QLineEdit()
         layout.addRow('Sample ID',self.SampleIDInput)
 
-        self.TempInput = QLineEdit()
+        self.TempInput = QLineEdit('293')
         self.TempInput.setValidator(MyDoubleValidator(0))
         layout.addRow('Temp',self.TempInput)
         self.setLayout(layout)
@@ -137,10 +137,10 @@ class SampleInfoWidget(MyGroupBox):
         self.thicknessInput.setValidator(MyDoubleValidator(0))
         layout.addRow('Thickness (um)', self.thicknessInput)
 
-        self.dataPointsInput = QLineEdit()
+        self.dataPointsInput = QLineEdit('10')
         #this is the max value the validator will take
         self.dataPointsInput.setValidator(QIntValidator(0,2147483647))
-        layout.addRow('Field Delay (sec)',self.dataPointsInput)
+        layout.addRow('# of data points',self.dataPointsInput)
 
         self.setMaximumSize(350,400)
         self.setLayout(layout)
@@ -216,6 +216,7 @@ class ResistivityWidget(QFrame):
                                 vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
         self.setLayout(layout)
+        self.setMinimumSize(100,500)
         self.setMaximumSize(200,1000)
 
 
@@ -287,29 +288,87 @@ class Column4Widget(QFrame):
 
 
 class BelowGraphWidget(QWidget):
-    '''widget placed below the graph has buttons and a few other widgets'''
+    '''widget placed below the graph'''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
 
-        subLayout1 = QHBoxLayout()
-        self.goBtn = ColoredButton('GO')
-        self.goBtn.setMinimumSize(400,55)
-        subLayout1.addWidget(self.goBtn)
+        self.pathLbl = QLabel('Output File Path')
+        layout.addWidget(self.pathLbl)
+        self.pathInput = QLineEdit('C/Users/lw5968/Documents/Hall Data/test')
+        layout.addWidget(self.pathInput)
+
+        self.rSqrLbl = QLabel('R-Square Value')
+        layout.addWidget(self.rSqrLbl)
+
+        self.rContainer = QFrame()
+        self.rContainer.setFrameShape(QFrame.Box)
+        self.rContainer.setFrameShadow(QFrame.Plain)
+        self.rContainer.setLineWidth(1)
+
+        frameLayout = QHBoxLayout()
+        self.box1 = QLineEdit()
+        self.box1.setReadOnly(True)
+        frameLayout.addWidget(self.box1)
+        self.box2 = QLineEdit()
+        self.box2.setReadOnly(True)
+        frameLayout.addWidget(self.box2)
+        self.box3 = QLineEdit()
+        self.box3.setReadOnly(True)
+        frameLayout.addWidget(self.box3)
+        self.box4 = QLineEdit()
+        self.box4.setReadOnly(True)
+        frameLayout.addWidget(self.box4)
+        self.box5 = QLineEdit()
+        self.box5.setReadOnly(True)
+        frameLayout.addWidget(self.box5)
+        self.box6 = QLineEdit()
+        self.box6.setReadOnly(True)
+        frameLayout.addWidget(self.box6)
+        self.box7 = QLineEdit()
+        self.box7.setReadOnly(True)
+        frameLayout.addWidget(self.box7)
+        self.box8 = QLineEdit()
+        self.box8.setReadOnly(True)
+        frameLayout.addWidget(self.box8)
+
+        self.rContainer.setLayout(frameLayout)
+
+
+        layout.addWidget(self.rContainer)
+        self.setLayout(layout)
+
+class IVColumn1(QWidget):
+
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        layout = QVBoxLayout()
+
+        self.currentLbl = QLabel('Current (A)')
+        layout.addWidget(self.currentLbl)
+        self.currentInput = QLineEdit('1e-6')
+        layout.addWidget(self.currentInput)
+
+        self.integratingLbl = QLabel('Voltmeter Integrating Time (s)')
+        layout.addWidget(self.integratingLbl)
+        self.integratingInput = QLineEdit('5s')
+        layout.addWidget(self.integratingInput)
+
+        self.voltLimitLbl = QLabel('Voltage Limit (V)')
+        layout.addWidget(self.voltLimitLbl)
+        self.voltLimitInput = QLineEdit('10')
+        layout.addWidget(self.voltLimitInput)
+
+        self.resistanceLbl = QLabel('Resistance (ohms)')
+        layout.addWidget(self.resistanceLbl)
+        self.resistanceDisplay = QLineEdit('0')
+        layout.addWidget(self.resistanceDisplay)
 
         self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
-        self.abortBtn.setMinimumSize(400,55)
-        subLayout1.addWidget(self.abortBtn)
+        layout.addWidget(self.abortBtn)
 
-
-        subLayout2 = QFormLayout()
-        self.pathInput = QLineEdit("C/Users/lw5968/Documents/Hall Data/test")
-        subLayout2.addRow('Output file path',self.pathInput)
-
-        self.rSquareDisplay = QLineEdit()
-        self.rSquareDisplay.setReadOnly(True)
-        subLayout2.addRow('R-Square Value',self.rSquareDisplay)
-
-        layout.addLayout(subLayout2)
-        layout.addLayout(subLayout1)
+        spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
+                                vPolicy = QSizePolicy.Expanding)
+        layout.addItem(spacer)
         self.setLayout(layout)
+        self.setMaximumSize(200,1000)
