@@ -85,7 +85,7 @@ class IVWorker(QObject):
         self.currentValues = np.linspace(-current, current, 11)
         self.switch = self.switchDict[switchNumber]
         self.intgrtTime = intgrtTime
-        self.voltLim = voltLim 
+        self.voltLim = voltLim
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = []):
         '''connect all the signals and slots, takes lists of the slots desired to be
@@ -116,6 +116,7 @@ class IVWorker(QObject):
             self.currentSource.write(currentCmdString)
             self.voltmeter.write('X')
             voltage = float(self.voltmeter.read())
+            print(voltage)
             self.dataPoint.emit([current, voltage])
 
         self.currentSource.write('I0.000E+0X')

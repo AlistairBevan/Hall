@@ -106,7 +106,7 @@ class Callout(QGraphicsItem):
 
 class View(QGraphicsView):
     '''graph class with cursors'''
-    max = 10
+    max = 1e-7
 
     def __init__(self, parent=None, name = '', log = False):
         '''sets up the chart and axis for use'''
@@ -122,6 +122,7 @@ class View(QGraphicsView):
         self.m_chart.setTitle(name)
         self.m_chart.legend().hide()
         self.series = QScatterSeries()
+        self.series.setMarkerSize(5)
         self.m_chart.addSeries(self.series)
         self.m_chart.createDefaultAxes()
         self.m_chart.setAcceptHoverEvents(True)
@@ -154,7 +155,7 @@ class View(QGraphicsView):
             self.y_axis.setRange(1,self.max);
         else:
             self.y_axis = QValueAxis()
-            self.y_axis.setRange(0,self.max)
+            self.y_axis.setRange(-self.max,self.max)
 
         self.y_axis.setTitleText('Voltage')
         self.m_chart.setAxisX(self.x_axis,self.series)
@@ -183,8 +184,8 @@ class View(QGraphicsView):
         '''how to handle mouse movement (updating X and Y at the bottom of the
         graph)'''
         from_chart = self.m_chart.mapToValue(event.pos())
-        self.m_coordX.setText(f"X: {from_chart.x():.3f}")
-        self.m_coordY.setText(f"Y: {from_chart.y():.3f}")
+        self.m_coordX.setText(f"X: {from_chart.x():.3e}")
+        self.m_coordY.setText(f"Y: {from_chart.y():.3e}")
         super().mouseMoveEvent(event)
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
@@ -215,7 +216,7 @@ class View(QGraphicsView):
             arr_x = np.array(self.xdata)/self.rangeX
             arr_y = np.array(self.ydata)/self.max
             min_i = find_minimum(arr_x, arr_y, point.x()/self.rangeX, point.y()/self.max)
-            self.m_tooltip.setText(f"X: {self.xdata[min_i]:.3f} \nY: {self.ydata[min_i]:.3f} ")
+            self.m_tooltip.setText(f"X: {self.xdata[min_i]:.3e} \nY: {self.ydata[min_i]:.3e} ")
             self.m_tooltip.m_anchor = QPointF(self.xdata[min_i],self.ydata[min_i])
             self.m_tooltip.setZValue(11)
             self.m_tooltip.updateGeometry()
@@ -246,12 +247,13 @@ class View(QGraphicsView):
         self.xdata.append(xdata)
         self.ydata.append(ydata)
         #autoscaling
-        if ydata > 0.9*self.max:
-            self.max = 1.2*ydata
+        
+        if abs(ydata) > 0.9*self.max:
+            self.max = abs(1.2*ydata)
             if self.log:
                 self.y_axis.setRange(1,self.max);
             else:
-                self.y_axis.setRange(0,self.max)
+                self.y_axis.setRange(-self.max,self.max)
 
         #add the data
         self.series.append(xdata,ydata)
@@ -266,5 +268,5 @@ class View(QGraphicsView):
         '''clear the plots of data'''
         self.ydata = []
         self.xdata = []
-        self.max = 10
+        self.max = 1e-7
         self.series.clear()
