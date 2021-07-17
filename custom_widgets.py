@@ -21,7 +21,7 @@ class MyDoubleValidator(QDoubleValidator):
                  top:float = float_info.max, \
                  decimals:int  = float_info.dig, parent: QWidget = None):
 
-        super(MyDoubleValidator, self).__init__(bottom, top, decimals, parent)
+        super().__init__(bottom, top, decimals, parent)
 
     def validate(self, input_value : str, pos : int) -> tuple:
         state, char, pos = super().validate(input_value, pos)
@@ -187,6 +187,14 @@ class Inputs(QWidget):
         self.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Expanding)
         self.setLayout(layout)
 
+        def textDict(self) -> dict:
+            '''return a dictionary of the displayed text'''
+            dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
+                    'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
+                    'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
+                    'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
+            return
+
 class FitResults1(QFrame):
     '''widget to display the results, located on the right side'''
     def __init__(self,*args,**kwargs):
@@ -261,12 +269,13 @@ class FitResults1(QFrame):
         self.setMinimumSize(100,500)
         self.setMaximumSize(200,1000)
 
-    def textDict(self):
+    def textDict(self) -> dict:
+        '''return a dictionary of the displayed text'''
         dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
                 'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
                 'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
                 'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
-
+        return
 
 class FitResults2(QFrame):
     '''widget to display the results, located on the right side'''
@@ -384,7 +393,7 @@ class BelowGraphWidget(QWidget):
         layout.addWidget(self.rContainer)
         self.setLayout(layout)
 
-    def textDict(self):
+    def textDict(self) -> dict:
         '''returns a dictionary of all the text in this widget for ease of access later'''
         dict = {'box1': self.box1.text(), 'box2': self.box2.text(),
                 'box3': self.box3.text(), 'box4': self.box4.text(),
@@ -419,6 +428,13 @@ class IVColumn1(QWidget):
         self.resistanceDisplay = QLineEdit('0')
         layout.addWidget(self.resistanceDisplay)
 
+        self.switchLbl = QLabel('Switch Number')
+        layout.addWidget(self.switchLbl)
+        self.switches = QComboBox()
+        for i in range(6):
+            self.switches.addItem(str(i + 1))
+
+        layout.addWidget(self.switches)
         self.goBtn = ColoredButton('Go')
         self.goBtn.setMinimumSize(400,55)
         layout.addWidget(self.goBtn)
@@ -432,3 +448,10 @@ class IVColumn1(QWidget):
         layout.addItem(spacer)
         self.setLayout(layout)
         self.setMaximumSize(200,1000)
+
+    def textDict(self) -> dict:
+        dict = {'current': self.currentInput.text(),
+                'switch': self.switches.currentText(),
+                'IntgrtTime': self.integratingInput.text(),
+                'voltLim': self.voltLimitInput.text()}
+        return dict

@@ -1,7 +1,7 @@
 import pyvisa
 
 
-rm = visa.ResourceManager()
+rm = pyvisa.ResourceManager()
 
 #create instances of our instruments
 voltmeter = rm.open_resource('GPIB0::2::INSTR')
@@ -9,32 +9,17 @@ scanner = rm.open_resource('GPIB0::7::INSTR')
 currentSource = rm.open_resource('GPIB0::12::INSTR')
 
 #configuring the voltmeter based on the labview word file
-voltmeter.write('GOX')
-voltmeter.write('B1X')
-voltmeter.write('I0X')
-voltmeter.write('N1X')
-voltmeter.write('W0X')
-voltmeter.write('Z0X')
-voltmeter.write('R0X')
-voltmeter.write('S0X')
-voltmeter.write('P2X')
-voltmeter.write('T5X')
-voltmeter.write('S0P1X')
+voltmeter.write('G0B1I0N1W0Z0R0S0P1O0T5')
 
 #configuring the Scanner
-scanner.write('RX')
-scanner.write('A0X')
-scanner.write('B071X')
-scanner.write('C071X')
-scanner.write('N071X')
+scanner.write(':clos (@1!1!1,1!2!2,1!3!3,1!4!4)')
 
 #functionGenerator
-currentSource.write('k0X')
-currentSource.write('F1X')
-currentSource.write('L1X')
-currentSource.write('B1X')
-currentSource.write('V1.00000E+1X')
-currentSource.write('W1.000E+0X')
+currentSource.write('F1XL1 B1')
 
 currentSource.write('I0.035E+0X')
-print(voltmeter.query_ascii_values('CURV?'))
+voltmeter.write('X')
+print(voltmeter.read())
+input('turn off?')
+currentSource.write('I0.000E+0X')
+#print(voltmeter.query_ascii_values('CURV?'))

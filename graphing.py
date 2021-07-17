@@ -238,9 +238,11 @@ class View(QGraphicsView):
             self.scene().removeItem(self.m_callouts.pop())
 
     #adds a point and scales the axis if necessary
-    def refresh_stats(self,xdata,ydata):
+    def refresh_stats(self,data):
         '''add data point'''
         #keep track of the data for cursor
+        xdata = data[0]
+        ydata = data[1]
         self.xdata.append(xdata)
         self.ydata.append(ydata)
         #autoscaling

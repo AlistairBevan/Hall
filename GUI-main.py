@@ -3,6 +3,7 @@ import pyvisa
 import time
 from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
                             ColoredButton,IVColumn1)
+from workers import IVWorker, HallWorker
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -17,14 +18,20 @@ class MainWindow(qtw.QMainWindow):
         self.makeUI()
         self.connectButtons()
         self.setupInstruments()
+        self.IVWorker = IVWorker(voltmeter = self.voltmeter,
+                                 scanner = self.scanner,
+                                 currentSource = self.currentSource,)
+        self.hallWorker = HallWorker(voltmeter = self.voltmeter,
+                                     scanner = self.scanner,
+                                     currentSource = self.currentSource)
         self.show()
 
     def setupInstruments(self):
         '''sets up the instruments for use'''
         rm = pyvisa.ResourceManager()
-        # voltmeter = rm.open_resource('GPIB0::2::INSTR')
-        # scanner = rm.open_resource('GPIB0::7::INSTR')
-        # currentSource = rm.open_resource('GPIB0::12::INSTR')
+        self.voltmeter = rm.open_resource('GPIB0::2::INSTR')
+        self.scanner = rm.open_resource('GPIB0::7::INSTR')
+        self.currentSource = rm.open_resource('GPIB0::12::INSTR')
 
 
     def makeUI(self):
@@ -87,25 +94,38 @@ class MainWindow(qtw.QMainWindow):
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
-        pass
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
+        self.IVColumn1.goBtn.clicked.connect(self.IVGo)
+        self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
 
-    def getInputDict(self):
-        pass
-        
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
         pass
 
     def hallAbort(self):
-        '''stops the thread'''
+        '''stops the hall thread'''
         pass
 
+    def IVGo(self):
+        '''run when you press go, sets up thread and starts it'''
+        inputs = self.IVColumn1.textDict()
+        current = float(inputs['current'])
+        switch = inputs['switch']
+        self.IVThread = qtc.QThread()
+        self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
+        self.IVThread.finished.connect(self.IVThread.deleteLater)
+        self.IVWorker.moveToThread(self.IVThread)
+        self.IVWorker.setInputs(current = current, switchNumber = switch)
+        self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit],
+            dataPointSlots = [self.IV_Plot.refresh_stats])
+        self.IVThread.start()
 
+    def IVAbort(self):
+        '''stops the IV thread'''
+        pass
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)
-    print(qtw.QStyleFactory.keys())
-    app.setStyle('Fusion')
+    app.setStyle('Windows')
     mw = MainWindow()
     sys.exit(app.exec())
