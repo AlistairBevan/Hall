@@ -3,6 +3,7 @@ from pyvisa import Resource
 import numpy as np
 from typing import List
 from miscellaneous import available_name
+import time
 
 class HallWorker(QObject):
     '''worker for taking a measurement the takeHallMeasurement method of this
@@ -80,14 +81,14 @@ class IVWorker(QObject):
         self.switch = ''
 
     def setInputs(self, switchNumber: str = '', intgrtTime: int = 5, current: float = 0,
-                    voltLim: float = 10):
+                    voltLim: float = 10) -> None:
         '''sets the user inputs to the correct values'''
         self.currentValues = np.linspace(-current, current, 11)
         self.switch = self.switchDict[switchNumber]
         self.intgrtTime = intgrtTime
         self.voltLim = voltLim
 
-    def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = []):
+    def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = []) -> None:
         '''connect all the signals and slots, takes lists of the slots desired to be
         connected, one list for each different signal this class has'''
         #connect the signals to desired slots
@@ -100,6 +101,7 @@ class IVWorker(QObject):
     def takeIVMeasurement(self) -> None:
         '''takes 11 evenly spaced current and voltage measurements across the
         -current to current range and plots them on the IV_Plot'''
+        self.clearDevices()
         #configuring the voltmeter based on the labview
         self.voltmeter.write('G0B1I0N1W0Z0R0S0P1O0T5')
         self.scanner.write(self.switch)#set the selected switch
@@ -120,7 +122,16 @@ class IVWorker(QObject):
             self.dataPoint.emit([current, voltage])
 
         self.currentSource.write('I0.000E+0X')
+        self.clearDevices()
         self.finished.emit()
+
+    def clearDevices(self) -> None:
+        self.currentSource.clear()
+        self.currentSource.write('K0X')
+        self.scanner.write(':open all')
+        self.scanner.clear()
+
+
 
     def stop(self) -> None:
         self.currentSource.write('I0.000E+0X')

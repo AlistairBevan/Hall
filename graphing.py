@@ -107,15 +107,15 @@ class Callout(QGraphicsItem):
 class View(QGraphicsView):
     '''graph class with cursors'''
     max = 1e-7
+    min = 0
 
-    def __init__(self, parent=None, name = '', log = False):
+    def __init__(self, parent=None, name = ''):
         '''sets up the chart and axis for use'''
         super().__init__(parent)
         self.m_callouts: List[Callout] = []
         self.setDragMode(QGraphicsView.NoDrag)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.log = log
         # chart
         self.m_chart = QChart(parent)
         self.m_chart.setMinimumSize(640, 480)
@@ -149,13 +149,9 @@ class View(QGraphicsView):
         self.x_axis.setTitleText('Current')
         self.rangeX = 10
 
-        if self.log:
-            self.y_axis = QLogValueAxis()
-            self.y_axis.setBase(10)
-            self.y_axis.setRange(1,self.max);
-        else:
-            self.y_axis = QValueAxis()
-            self.y_axis.setRange(-self.max,self.max)
+
+        self.y_axis = QValueAxis()
+        self.y_axis.setRange(-self.max,self.max)
 
         self.y_axis.setTitleText('Voltage')
         self.m_chart.setAxisX(self.x_axis,self.series)
@@ -247,14 +243,14 @@ class View(QGraphicsView):
         self.xdata.append(xdata)
         self.ydata.append(ydata)
         #autoscaling
-        
-        if abs(ydata) > 0.9*self.max:
-            self.max = abs(1.2*ydata)
-            if self.log:
-                self.y_axis.setRange(1,self.max);
-            else:
-                self.y_axis.setRange(-self.max,self.max)
 
+        if ydata > self.max - 0.1*abs(self.max) or len(self.ydata) == 1:
+            self.max = ydata + 0.2*abs(ydata)
+
+        if ydata < self.min + 0.1*abs(self.min) or len(self.ydata) == 1:
+            self.min = ydata - 0.2*abs(ydata)
+
+        self.y_axis.setRange(self.min, self.max)
         #add the data
         self.series.append(xdata,ydata)
 
@@ -269,4 +265,5 @@ class View(QGraphicsView):
         self.ydata = []
         self.xdata = []
         self.max = 1e-7
+        self.min = 0
         self.series.clear()

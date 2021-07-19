@@ -109,25 +109,25 @@ class MainWindow(qtw.QMainWindow):
         '''run when you press go, sets up thread and starts it'''
         inputs = self.IVColumn1.textDict()
         current = float(inputs['current'])
-        switch = inputs['switch']
+        switchNumber = inputs['switch']
         self.IV_Plot.cla()
         self.IV_Plot.set_xlim(-current*1.05, current*1.05)
         self.IVThread = qtc.QThread()
         self.IVWorker = IVWorker(voltmeter = self.voltmeter,
                                  scanner = self.scanner,
                                  currentSource = self.currentSource,)
+        self.IVWorker.setInputs(switchNumber = switchNumber, current = current)
         self.IVWorker.moveToThread(self.IVThread)
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
         self.IVThread.finished.connect(self.IVThread.deleteLater)
-
-        self.IVWorker.setInputs(current = current, switchNumber = switch)
         self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater],
             dataPointSlots = [self.IV_Plot.refresh_stats])
         self.IVThread.start()
 
     def IVAbort(self):
         '''stops the IV thread'''
-        pass
+        self.IVWorker.abort = True
+        
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)
     app.setStyle('Windows')
