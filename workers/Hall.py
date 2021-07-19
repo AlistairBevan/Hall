@@ -98,7 +98,7 @@ class HallWorker(QObject):
                 voltage = float(self.voltmeter.read())
                 self.dataPoint.emit([current, voltage])
                 singleLine.append([current, voltage])
-            lines.append(singleLine)
+            lines.append(np.array(singleLine))
 
         self.clearDevices()
         self.lineData.emit(lines)
