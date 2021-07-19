@@ -190,16 +190,16 @@ class Inputs(QWidget):
         def textDict(self) -> dict:
             '''return a dictionary of the displayed text'''
             dict = {'temp': self.sampleInfoWidget.tempInput.text(),
-                    'ID': self.sampleInfoWidget.sampleIDInput.text(),
+                    'sampleID': self.sampleInfoWidget.sampleIDInput.text(),
                     'thickness': self.sampleInfoWidget.thicknessInput.text(),
                     'dataPoints': self.sampleInfoWidget.dataPointsInput.text(),
                     'field': self.fieldControllerWidget.fieldInput.text(),
-                    'delay': self.fieldControllerWidget.delayInput(),
+                    'fieldDelay': self.fieldControllerWidget.delayInput(),
                     'current': self.currentWidget.currentInput.text(),
                     'dwell': self.currentWidget.dwellInput.text(),
                     'vLim': self.currentWidget.vLimitInput.text(),
                     'intgrtTime': self.voltmeterWidget.integratingInput.currentText(),
-                    'Range': self.voltmeterWidget.RangeInput.currentText()}
+                    'rangeCtrl': self.voltmeterWidget.RangeInput.currentText()}
             return
 
 

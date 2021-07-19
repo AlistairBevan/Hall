@@ -19,10 +19,6 @@ class MainWindow(qtw.QMainWindow):
         self.makeUI()
         self.connectButtons()
         self.setupInstruments()
-
-        self.hallWorker = HallWorker(voltmeter = self.voltmeter,
-                                     scanner = self.scanner,
-                                     currentSource = self.currentSource)
         self.show()
 
     def setupInstruments(self):
@@ -31,6 +27,7 @@ class MainWindow(qtw.QMainWindow):
         self.voltmeter = rm.open_resource('GPIB0::2::INSTR')
         self.scanner = rm.open_resource('GPIB0::7::INSTR')
         self.currentSource = rm.open_resource('GPIB0::12::INSTR')
+        self.fieldController = rm.open_resource('GPIB0::3::INSTR')
 
 
     def makeUI(self):
@@ -53,8 +50,8 @@ class MainWindow(qtw.QMainWindow):
         self.hallLayout.addLayout(self.column2Layout)
 
         #add the graph
-        self.hall_plot = View()
-        self.hall_plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
+        self.hall_Plot = View()
+        self.hall_Plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                     qtw.QSizePolicy.MinimumExpanding)
         self.column2Layout.addWidget(self.hall_plot)
 
@@ -100,11 +97,29 @@ class MainWindow(qtw.QMainWindow):
 
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
-        pass
+        inputs = self.hallInputs.textDict()
+        current = inputs['current']
+        filepath = self.belowGraph.pathInput.text()
+        self.hall_Plot.cla()
+        self.hall_Plot.set_xlim(-current*1.05, current*1.05)
+        self.hallThread = qtc.QThread()
+        #the "**inputs" converts the dictionary into keyword arguments and since
+        #I formatted the textDict() to return the proper names this will save some writing
+        #initializing all the inputs
+        self.hallWorker = HallWorker(voltmeter = self.voltmeter, currentSource = self.currentSource,
+                            scanner = self.scanner, fieldController = self.fieldController,
+                            filepath = filepath, **inputs)
+        self.hallWorker.moveToThread(self.hallThread)
+        self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
+        self.hallThread.finished.connect(self.hallThread.deleteLater)
+        self.hallWorker.connectSignals(finishedSlots = [self.IVThread.quit,
+            self.IVWorker.deleteLater], dataPointSlots = [self.hall_Plot.refresh_stats],
+            lineSlots = [])
+        self.hallThread.start()
 
     def hallAbort(self):
         '''stops the hall thread'''
-        pass
+        self.hallWorker.abort = True
 
     def IVGo(self):
         '''run when you press go, sets up thread and starts it'''

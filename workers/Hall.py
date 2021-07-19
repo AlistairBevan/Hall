@@ -11,7 +11,7 @@ class HallWorker(QObject):
     responsive'''
     finished = pyqtSignal()
     dataPoint = pyqtSignal(list)
-    line = pyqtSignal(list)
+    lineData = pyqtSignal(list)
     abort = False
     switchDict: dict = {'1': ':clos (@1!1!1,1!2!2,1!3!3,1!4!4)',
                         '2': ':clos (@1!1!2,1!2!3,1!3!4,1!4!1)',
@@ -23,10 +23,10 @@ class HallWorker(QObject):
     intgrtTimeDict: dict = {'2': 'S0P1', '5': 'S0P2', '10': 'S2P1', '20': 'S0P3'}
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
-        scanner:Resource = None, fieldController = None, intgrtTime: int = 0, rangeCtrl: str = '',
-        current: float = 0, dwell: float = 0, vLim: float = 0, sampleID: str = '',
-        temp: float = 0, thickness: float = 0, numPoints: int = 1, field: int = 0,
-        fieldDelay: float = 0, filepath: str = '') -> None:
+        scanner: Resource = None, fieldController: Resource = None, intgrtTime: int = 0,
+        rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
+        temp: float = 0, thickness: float = 0, dataPoints: int = 1, field: int = 0,
+        fieldDelay: float = 0, filepath: str = '', sampleID: str = '') -> None:
         '''Constructor for the class; stores the relevant information for the thread
         to use, since arguments cannot be passed when using moveToThread (might be
         possible with lambda but I think this way is better)'''
@@ -34,7 +34,7 @@ class HallWorker(QObject):
         self.currentSource = currentSource
         self.scanner = scanner
         self.fieldController = fieldController
-        self.intgrtTimeCmd = intgrtTimeDict['intgrtTime']
+        self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
         self.rangeCtrl = rangeCtrl
         self.current = current
         self.dwell = dwell
@@ -42,7 +42,7 @@ class HallWorker(QObject):
         self.sampleID = sampleID
         self.temp = temp
         self.thickness = thickness
-        self.numPoints = numPoints
+        self.dataPoints = dataPoints
         self.field = field
         self.fieldDelay = fieldDelay
         self.filepath = available_name(filepath)
@@ -60,19 +60,33 @@ class HallWorker(QObject):
             self.dataPoint.connect(dataPointSlot)
 
         for LineSlot in lineSlots:
-            self.line.connect(lineSlot)
+            self.lineData.connect(lineSlot)
 
 
     def takeHallMeasurment(self) -> None:
         '''method for executing a measurement routine'''
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
+        self.clearDevices()
+        lines = []
 
-        for i in range(1,5):#do the first four without magnet
-            switchCmd = switchDict[str(i)]
+        for i in range(1,9):
+            #get the proper switch command
+            if i < 7:
+                switchCmd = switchDict[str(i)]
+            else:
+                switchCmd = switchDict[str(i - 2)]
             self.scanner.write(switchCmd)
+            if i == 5:
+                #turn on the field when we get to the fifth switch
+                self.fieldController.write(f'CF{self.field}')
+                time.sleep(self.fieldDelay)
+            if i == 7:
+                #reverse the field
+                self.fieldcontroller.write('SO4')
+                time.sleep(2*self.fieldDelay)
+            singleLine = []
             for current in self.currentValues:
-
                 if self.abort:
                     self.currentSource.write('I0.000E+0X')
                     self.finished.emit()
@@ -83,10 +97,12 @@ class HallWorker(QObject):
                 self.voltmeter.write('X')
                 voltage = float(self.voltmeter.read())
                 self.dataPoint.emit([current, voltage])
+                singleLine.append([current, voltage])
+            lines.append(singleLine)
 
-        #turn on magnet
-        self.fieldController.write(f'CF{self.field}')
-
+        self.clearDevices()
+        self.lineData.emit(lines)
+        self.finished.emit()
 
 
     def clearDevices(self):
