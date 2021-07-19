@@ -71,6 +71,8 @@ class IVWorker(QObject):
                         '5': ':clos (@1!1!1,1!2!4,1!3!2,1!4!3)',
                         '6': ':clos (@1!1!4,1!2!2,1!3!3,1!4!1)',}
 
+    IntgrtTimeDict: dict = {'2': 'S0P1', '5': 'S0P2', '10': 'S2P1', '20': 'S0P3'}
+
     def __init__(self, voltmeter: Resource = None, currentSource: Resource = None,
             scanner: Resource = None):
         super().__init__()
@@ -78,15 +80,17 @@ class IVWorker(QObject):
         self.currentSource = currentSource
         self.scanner = scanner
         self.currentValues = np.array([])
-        self.switch = ''
+        self.switchCmd = ''
 
     def setInputs(self, switchNumber: str = '', intgrtTime: int = 5, current: float = 0,
                     voltLim: float = 10) -> None:
         '''sets the user inputs to the correct values'''
         self.currentValues = np.linspace(-current, current, 11)
-        self.switch = self.switchDict[switchNumber]
-        self.intgrtTime = intgrtTime
-        self.voltLim = voltLim
+        self.switchCmd = self.switchDict[switchNumber]
+        # intgrtTimeCmd = self.IntgrtTimeDict['5']
+        # self.voltmeter.write(intgrtTimeCmd)
+        # voltLimCmd = f"V{voltLim:.4e}X"
+        # self.currentSource.write(voltLimCmd)
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = []) -> None:
         '''connect all the signals and slots, takes lists of the slots desired to be
@@ -103,8 +107,8 @@ class IVWorker(QObject):
         -current to current range and plots them on the IV_Plot'''
         self.clearDevices()
         #configuring the voltmeter based on the labview
-        self.voltmeter.write('G0B1I0N1W0Z0R0S0P1O0T5')
-        self.scanner.write(self.switch)#set the selected switch
+        self.voltmeter.write(f'G0B1I0N1W0Z0R0O0T5')
+        self.scanner.write(self.switchCmd)#set the selected switch
         self.currentSource.write('F1XL1 B1')
 
         for current in self.currentValues:
@@ -126,10 +130,10 @@ class IVWorker(QObject):
         self.finished.emit()
 
     def clearDevices(self) -> None:
-        self.currentSource.clear()
+
         self.currentSource.write('K0X')
         self.scanner.write(':open all')
-        self.scanner.clear()
+
 
 
 
