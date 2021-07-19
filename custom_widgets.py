@@ -135,12 +135,12 @@ class SampleInfoWidget(MyGroupBox):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
 
-        self.SampleIDInput = QLineEdit()
-        layout.addRow('Sample ID',self.SampleIDInput)
+        self.sampleIDInput = QLineEdit()
+        layout.addRow('Sample ID',self.sampleIDInput)
 
-        self.TempInput = QLineEdit('293')
-        self.TempInput.setValidator(MyDoubleValidator(0))
-        layout.addRow('Temp',self.TempInput)
+        self.tempInput = QLineEdit('293')
+        self.tempInput.setValidator(MyDoubleValidator(0))
+        layout.addRow('Temp',self.tempInput)
         self.setLayout(layout)
 
         self.thicknessInput = QLineEdit()
@@ -189,12 +189,19 @@ class Inputs(QWidget):
 
         def textDict(self) -> dict:
             '''return a dictionary of the displayed text'''
-            # dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
-            #         'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
-            #         'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
-            #         'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
-            # return
-            pass
+            dict = {'temp': self.sampleInfoWidget.tempInput.text(),
+                    'ID': self.sampleInfoWidget.sampleIDInput.text(),
+                    'thickness': self.sampleInfoWidget.thicknessInput.text(),
+                    'dataPoints': self.sampleInfoWidget.dataPointsInput.text(),
+                    'field': self.fieldControllerWidget.fieldInput.text(),
+                    'delay': self.fieldControllerWidget.delayInput(),
+                    'current': self.currentWidget.currentInput.text(),
+                    'dwell': self.currentWidget.dwellInput.text(),
+                    'vLim': self.currentWidget.vLimitInput.text(),
+                    'intgrtTime': self.voltmeterWidget.integratingInput.currentText(),
+                    'Range': self.voltmeterWidget.RangeInput.currentText()}
+            return
+
 
 class FitResults1(QFrame):
     '''widget to display the results, located on the right side'''
@@ -458,6 +465,6 @@ class IVColumn1(QWidget):
     def textDict(self) -> dict:
         dict = {'current': self.currentInput.text(),
                 'switch': self.switches.currentText(),
-                'IntgrtTime': self.integratingInput.text(),
+                'IntgrtTime': self.integratingInput.currentText(),
                 'voltLim': self.voltLimitInput.text()}
         return dict

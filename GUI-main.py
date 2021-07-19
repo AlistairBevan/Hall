@@ -3,7 +3,8 @@ import pyvisa
 import time
 from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
                             ColoredButton,IVColumn1)
-from workers import IVWorker, HallWorker
+from workers.IV import IVWorker
+from workers.Hall import HallWorker
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
@@ -127,7 +128,7 @@ class MainWindow(qtw.QMainWindow):
     def IVAbort(self):
         '''stops the IV thread'''
         self.IVWorker.abort = True
-        
+
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)
     app.setStyle('Windows')
