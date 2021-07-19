@@ -189,11 +189,12 @@ class Inputs(QWidget):
 
         def textDict(self) -> dict:
             '''return a dictionary of the displayed text'''
-            dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
-                    'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
-                    'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
-                    'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
-            return
+            # dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
+            #         'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
+            #         'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
+            #         'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
+            # return
+            pass
 
 class FitResults1(QFrame):
     '''widget to display the results, located on the right side'''
@@ -415,7 +416,12 @@ class IVColumn1(QWidget):
 
         self.integratingLbl = QLabel('Voltmeter Integrating Time (s)')
         layout.addWidget(self.integratingLbl)
-        self.integratingInput = QLineEdit('5s')
+        self.integratingInput = QComboBox()
+        self.integratingInput.addItem('~2s')
+        self.integratingInput.addItem('~5s')
+        self.integratingInput.addItem('~10s')
+        self.integratingInput.addItem('~20s')
+        self.integratingInput.setCurrentIndex(1)
         layout.addWidget(self.integratingInput)
 
         self.voltLimitLbl = QLabel('Voltage Limit (V)')
