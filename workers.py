@@ -87,10 +87,9 @@ class IVWorker(QObject):
         '''sets the user inputs to the correct values'''
         self.currentValues = np.linspace(-current, current, 11)
         self.switchCmd = self.switchDict[switchNumber]
-        # intgrtTimeCmd = self.IntgrtTimeDict['5']
-        # self.voltmeter.write(intgrtTimeCmd)
-        # voltLimCmd = f"V{voltLim:.4e}X"
-        # self.currentSource.write(voltLimCmd)
+        self.intgrtTimeCmd = self.IntgrtTimeDict['2']
+        voltLimCmd = f"V{voltLim:.4e}X"
+        self.currentSource.write(voltLimCmd)
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = []) -> None:
         '''connect all the signals and slots, takes lists of the slots desired to be
@@ -107,7 +106,7 @@ class IVWorker(QObject):
         -current to current range and plots them on the IV_Plot'''
         self.clearDevices()
         #configuring the voltmeter based on the labview
-        self.voltmeter.write(f'G0B1I0N1W0Z0R0O0T5')
+        self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.scanner.write(self.switchCmd)#set the selected switch
         self.currentSource.write('F1XL1 B1')
 
@@ -122,7 +121,6 @@ class IVWorker(QObject):
             self.currentSource.write(currentCmdString)
             self.voltmeter.write('X')
             voltage = float(self.voltmeter.read())
-            print(voltage)
             self.dataPoint.emit([current, voltage])
 
         self.currentSource.write('I0.000E+0X')
