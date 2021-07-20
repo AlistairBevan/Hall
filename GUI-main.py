@@ -53,7 +53,7 @@ class MainWindow(qtw.QMainWindow):
         self.hall_Plot = View()
         self.hall_Plot.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                     qtw.QSizePolicy.MinimumExpanding)
-        self.column2Layout.addWidget(self.hall_plot)
+        self.column2Layout.addWidget(self.hall_Plot)
 
         #add the stuff below the graph
         self.belowGraph = BelowGraphWidget()
@@ -95,8 +95,17 @@ class MainWindow(qtw.QMainWindow):
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
 
+    def disableGo(self):
+        self.IVColumn1.goBtn.setEnabled(False)
+        self.hallInputs.goBtn.setEnabled(False)
+
+    def enableGo(self):
+        self.IVColumn1.goBtn.setEnabled(False)
+        self.hallInputs.goBtn.setEnabled(False)
+
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
+        self.disableGo()
         inputs = self.hallInputs.textDict()
         current = inputs['current']
         filepath = self.belowGraph.pathInput.text()
@@ -112,8 +121,8 @@ class MainWindow(qtw.QMainWindow):
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
-        self.hallWorker.connectSignals(finishedSlots = [self.IVThread.quit,
-            self.IVWorker.deleteLater], dataPointSlots = [self.hall_Plot.refresh_stats],
+        self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
+            self.hallWorker.deleteLater,self.enableGo], dataPointSlots = [self.hall_Plot.refresh_stats],
             lineSlots = [])
         self.hallThread.start()
 
@@ -123,6 +132,7 @@ class MainWindow(qtw.QMainWindow):
 
     def IVGo(self):
         '''run when you press go, sets up thread and starts it'''
+        self.disableGo()
         inputs = self.IVColumn1.textDict()
         current = float(inputs['current'])
         switchNumber = inputs['switch']
@@ -136,8 +146,8 @@ class MainWindow(qtw.QMainWindow):
         self.IVWorker.moveToThread(self.IVThread)
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
         self.IVThread.finished.connect(self.IVThread.deleteLater)
-        self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater],
-            dataPointSlots = [self.IV_Plot.refresh_stats])
+        self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater,
+            self.enableGo], dataPointSlots = [self.IV_Plot.refresh_stats])
         self.IVThread.start()
 
     def IVAbort(self):

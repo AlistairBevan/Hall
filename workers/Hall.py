@@ -20,21 +20,22 @@ class HallWorker(QObject):
                         '5': ':clos (@1!1!1,1!2!4,1!3!2,1!4!3)',
                         '6': ':clos (@1!1!4,1!2!2,1!3!3,1!4!1)',}
 
-    intgrtTimeDict: dict = {'2': 'S0P1', '5': 'S0P2', '10': 'S2P1', '20': 'S0P3'}
+    intgrtTimeDict: dict = {'~2s': 'S0P1', '~5s': 'S0P2', '~10s': 'S2P1', '~20s': 'S0P3'}
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
-        scanner: Resource = None, fieldController: Resource = None, intgrtTime: int = 0,
+        scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '',
         rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
         temp: float = 0, thickness: float = 0, dataPoints: int = 1, field: int = 0,
         fieldDelay: float = 0, filepath: str = '', sampleID: str = '') -> None:
         '''Constructor for the class; stores the relevant information for the thread
-        to use, since arguments cannot be passed when using moveToThread (might be
+        to use since arguments cannot be passed when using moveToThread (might be
         possible with lambda but I think this way is better)'''
+        super().__init__()
         self.voltmeter = voltmeter
         self.currentSource = currentSource
         self.scanner = scanner
         self.fieldController = fieldController
-        self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
+        self.intgrtTimeCmd = self.intgrtTimeDict['~2s']
         self.rangeCtrl = rangeCtrl
         self.current = current
         self.dwell = dwell
@@ -46,6 +47,7 @@ class HallWorker(QObject):
         self.field = field
         self.fieldDelay = fieldDelay
         self.filepath = available_name(filepath)
+        self.currentValues = np.linspace(-current, current, dataPoints)
 
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
@@ -73,18 +75,19 @@ class HallWorker(QObject):
         for i in range(1,9):
             #get the proper switch command
             if i < 7:
-                switchCmd = switchDict[str(i)]
-            else:
-                switchCmd = switchDict[str(i - 2)]
+                switchCmd = self.switchDict[str(i)]
+            else:#repeats 5 and 6
+                switchCmd = self.switchDict[str(i - 2)]
             self.scanner.write(switchCmd)
             if i == 5:
                 #turn on the field when we get to the fifth switch
                 self.fieldController.write(f'CF{self.field}')
-                time.sleep(self.fieldDelay)
+                time.sleep(self.fieldDelay)#takes time for the field to ramp up
             if i == 7:
                 #reverse the field
                 self.fieldcontroller.write('SO4')
-                time.sleep(2*self.fieldDelay)
+                time.sleep(2*self.fieldDelay)#takes a while for it to reverse
+
             singleLine = []
             for current in self.currentValues:
                 if self.abort:
@@ -95,17 +98,19 @@ class HallWorker(QObject):
                 currentCmdString = f'I{current:.4e}X'
                 self.currentSource.write(currentCmdString)
                 self.voltmeter.write('X')
-                voltage = float(self.voltmeter.read())
+                voltage = float(self.voltmeter.read_raw())
                 self.dataPoint.emit([current, voltage])
                 singleLine.append([current, voltage])
+            self.scanner.write(':open all')
             lines.append(np.array(singleLine))
 
         self.clearDevices()
         self.lineData.emit(lines)
         self.finished.emit()
+        print('done')
 
 
     def clearDevices(self):
         self.currentSource.write('K0X')
         self.scanner.write(':open all')
-        self.fieldControler.write('CF0')
+        self.fieldController.write('CF0')

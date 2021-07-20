@@ -143,7 +143,7 @@ class SampleInfoWidget(MyGroupBox):
         layout.addRow('Temp',self.tempInput)
         self.setLayout(layout)
 
-        self.thicknessInput = QLineEdit()
+        self.thicknessInput = QLineEdit('1')
         self.thicknessInput.setValidator(MyDoubleValidator(0))
         layout.addRow('Thickness (um)', self.thicknessInput)
 
@@ -187,20 +187,20 @@ class Inputs(QWidget):
         self.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Expanding)
         self.setLayout(layout)
 
-        def textDict(self) -> dict:
-            '''return a dictionary of the displayed text'''
-            dict = {'temp': self.sampleInfoWidget.tempInput.text(),
-                    'sampleID': self.sampleInfoWidget.sampleIDInput.text(),
-                    'thickness': self.sampleInfoWidget.thicknessInput.text(),
-                    'dataPoints': self.sampleInfoWidget.dataPointsInput.text(),
-                    'field': self.fieldControllerWidget.fieldInput.text(),
-                    'fieldDelay': self.fieldControllerWidget.delayInput(),
-                    'current': self.currentWidget.currentInput.text(),
-                    'dwell': self.currentWidget.dwellInput.text(),
-                    'vLim': self.currentWidget.vLimitInput.text(),
-                    'intgrtTime': self.voltmeterWidget.integratingInput.currentText(),
-                    'rangeCtrl': self.voltmeterWidget.RangeInput.currentText()}
-            return
+    def textDict(self) -> dict:
+        '''return a dictionary of the displayed text'''
+        dict = {'temp': self.sampleInfoWidget.tempInput.text(),
+                'sampleID': self.sampleInfoWidget.sampleIDInput.text(),
+                'thickness': float(self.sampleInfoWidget.thicknessInput.text()),
+                'dataPoints': int(self.sampleInfoWidget.dataPointsInput.text()),
+                'field': float(self.fieldControllerWidget.fieldInput.text()),
+                'fieldDelay': float(self.fieldControllerWidget.delayInput.text()),
+                'current': float(self.currentWidget.currentInput.text()),
+                'dwell': float(self.currentWidget.dwellInput.text()),
+                'vLim': float(self.currentWidget.vLimitInput.text()),
+                'intgrtTime': self.voltmeterWidget.integratingInput.currentText(),
+                'rangeCtrl': self.voltmeterWidget.RangeInput.currentText()}
+        return dict
 
 
 class FitResults1(QFrame):
