@@ -472,11 +472,11 @@ class IVColumn1(QWidget):
         return dict
 
 class status(QStatusBar):
-    '''status bar at the end bottom of the application to display useful information'''
+    '''status bar at the bottom of the application to display useful information'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.switchLbl = QLabel('switch: Nan')
-        self.fieldLbl= QLabel('field: off')
+        self.fieldLbl = QLabel('field: off')
         self.stateLbl = QLabel("state: Idle")
 
         self.addPermanentWidget(self.stateLbl)
