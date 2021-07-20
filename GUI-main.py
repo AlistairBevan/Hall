@@ -2,7 +2,7 @@ import sys
 import pyvisa
 import time
 from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
-                            ColoredButton,IVColumn1)
+                            ColoredButton,IVColumn1,status)
 from workers.IV import IVWorker
 from workers.Hall import HallWorker
 from PyQt5 import QtWidgets as qtw
@@ -84,24 +84,31 @@ class MainWindow(qtw.QMainWindow):
                                     qtw.QSizePolicy.MinimumExpanding)
         self.IVColumn2.addWidget(self.IV_Plot)
         self.IVWidget.setLayout(self.IVLayout)
-
+        status_bar = status()
+        self.setStatusBar(status_bar)
         self.centralWidget().addTab(self.IVWidget, "IV-Test")
         self.resize(800,600)
 
     def connectButtons(self):
         '''Connects the buttons to the proper logic'''
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
+        self.hallInputs.goBtn.clicked.connect(lambda:
+            self.statusBar().stateLbl.setText('state: Running'))
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
+        self.IVColumn1.goBtn.clicked.connect(lambda:
+            self.statusBar().stateLbl.setText('state: Running'))
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
+        self.IVColumn1.switches.currentIndexChanged.connect(lambda:
+            self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText()))
 
     def disableGo(self):
         self.IVColumn1.goBtn.setEnabled(False)
         self.hallInputs.goBtn.setEnabled(False)
 
     def enableGo(self):
-        self.IVColumn1.goBtn.setEnabled(False)
-        self.hallInputs.goBtn.setEnabled(False)
+        self.IVColumn1.goBtn.setEnabled(True)
+        self.hallInputs.goBtn.setEnabled(True)
 
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
@@ -122,8 +129,11 @@ class MainWindow(qtw.QMainWindow):
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
-            self.hallWorker.deleteLater,self.enableGo], dataPointSlots = [self.hall_Plot.refresh_stats],
-            lineSlots = [])
+            self.hallWorker.deleteLater,self.enableGo, lambda: self.stateLbl.setText('state: Idle')],
+            dataPointSlots = [self.hall_Plot.refresh_stats],
+            lineSlots = [],
+            fieldSlots = [self.statusBar().fieldLbl.setText],
+            switchSlots = [lambda switchNumber: self.statusBar().switchLbl.setText('switch: ' + switchNumber)])
         self.hallThread.start()
 
     def hallAbort(self):
@@ -147,7 +157,8 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
         self.IVThread.finished.connect(self.IVThread.deleteLater)
         self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater,
-            self.enableGo], dataPointSlots = [self.IV_Plot.refresh_stats])
+            self.enableGo, lambda: self.stateLbl.setText('state: Idle')],
+            dataPointSlots = [self.IV_Plot.refresh_stats])
         self.IVThread.start()
 
     def IVAbort(self):

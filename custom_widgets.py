@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QPushButton,QFormLayout,QWidget,
                              QLineEdit,QVBoxLayout,QSizePolicy,
                              QGroupBox,QHBoxLayout,QComboBox,QFrame,
-                             QLabel,QSpacerItem)
+                             QLabel,QSpacerItem, QStatusBar)
 from PyQt5.QtGui import (QValidator,QDoubleValidator,QIntValidator)
 #from PyQt5.qtc import ()
 from sys import float_info, maxsize
@@ -468,3 +468,15 @@ class IVColumn1(QWidget):
                 'IntgrtTime': self.integratingInput.currentText(),
                 'voltLim': self.voltLimitInput.text()}
         return dict
+
+class status(QStatusBar):
+    '''status bar at the end bottom of the application to display useful information'''
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.switchLbl = QLabel('switch: 1')
+        self.fieldLbl= QLabel('field: off')
+        self.stateLbl = QLabel("state: Idle")
+
+        self.addPermanentWidget(self.stateLbl)
+        self.addPermanentWidget(self.fieldLbl)
+        self.addPermanentWidget(self.switchLbl)

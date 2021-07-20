@@ -65,7 +65,7 @@ class IVWorker(QObject):
             currentCmdString = f'I{current:.4e}X'
             self.currentSource.write(currentCmdString)
             self.voltmeter.write('X')
-            voltage = float(self.voltmeter.read())
+            voltage = float(self.voltmeter.read_raw())
             self.dataPoint.emit([current, voltage])
 
         self.currentSource.write('I0.000E+0X')

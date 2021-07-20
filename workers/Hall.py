@@ -12,6 +12,8 @@ class HallWorker(QObject):
     finished = pyqtSignal()
     dataPoint = pyqtSignal(list)
     lineData = pyqtSignal(list)
+    fieldState = pyqtSignal(str)
+    switchSgnl = pyqtSignal(str)
     abort = False
     switchDict: dict = {'1': ':clos (@1!1!1,1!2!2,1!3!3,1!4!4)',
                         '2': ':clos (@1!1!2,1!2!3,1!3!4,1!4!1)',
@@ -51,7 +53,7 @@ class HallWorker(QObject):
 
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
-              lineSlots: List = []) -> None:
+              lineSlots: List = [], fieldSlots: List = [], switchSlots: List = []) -> None:
         '''connect all the signals and slots, takes lists of the slots desired to be
         connected, one list for each different signal this class has'''
         #connect the signals to desired slots
@@ -64,15 +66,42 @@ class HallWorker(QObject):
         for LineSlot in lineSlots:
             self.lineData.connect(lineSlot)
 
+        for fieldSlot in fieldSlots:
+            self.fieldState.connect(fieldSlot)
+
+        for switchSlot in switchSlots:
+            self.switchSgnl.connect(switchSlot)
+
+    def powerOnField(self) -> None:
+        '''starts up the field Controller (copied from labview)'''
+        self.fieldController.write('MO0')
+        self.fieldController.write('SO1')
+        time.sleep(0.2)
+        self.fieldController.write('SO0')
+        self.fieldController.write('CF0')
+
+    def reverseField(self) -> None:
+        '''reverses the field direction'''
+        self.fieldController.write(f'CF0')
+        time.sleep(self.fieldDelay)
+        #reverse the field
+        self.fieldController.write('SO4')
+        time.sleep(0.2)
+        self.fieldController.write('SO0')
+        time.sleep(2*self.fieldDelay)#takes a while for it to reverse
+
+
 
     def takeHallMeasurment(self) -> None:
         '''method for executing a measurement routine'''
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
+        self.powerOnField()
         self.clearDevices()
         lines = []
 
         for i in range(1,9):
+            self.switchSgnl.emit(i)
             #get the proper switch command
             if i < 7:
                 switchCmd = self.switchDict[str(i)]
@@ -81,17 +110,22 @@ class HallWorker(QObject):
             self.scanner.write(switchCmd)
             if i == 5:
                 #turn on the field when we get to the fifth switch
+                self.fieldState.emit('On')
                 self.fieldController.write(f'CF{self.field}')
                 time.sleep(self.fieldDelay)#takes time for the field to ramp up
+
             if i == 7:
-                #reverse the field
-                self.fieldcontroller.write('SO4')
-                time.sleep(2*self.fieldDelay)#takes a while for it to reverse
+                #reverse the field when we get to the seventh switch
+                self.reverseField()
+                #ramp back up to the desired field
+                self.fieldController.write(f'CF{self.field}')
+                time.sleep(self.fieldDelay)
 
             singleLine = []
+            #iterate throught the current values measuring voltage
             for current in self.currentValues:
-                if self.abort:
-                    self.currentSource.write('I0.000E+0X')
+                if self.abort:#check for an abort call
+                    self.clearDevices()
                     self.finished.emit()
                     return
 
@@ -104,13 +138,19 @@ class HallWorker(QObject):
             self.scanner.write(':open all')
             lines.append(np.array(singleLine))
 
+
         self.clearDevices()
-        self.lineData.emit(lines)
+        #when were done we need to reverse the field back again
+        self.fieldController.write('SO4')
+        time.sleep(2*self.fieldDelay)
         self.finished.emit()
+        print(lines)
         print('done')
 
 
     def clearDevices(self):
         self.currentSource.write('K0X')
+        self.currentSource.write('I0.000E+0X')
         self.scanner.write(':open all')
         self.fieldController.write('CF0')
+        self.fieldState.emit('off')
