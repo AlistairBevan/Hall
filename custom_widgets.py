@@ -178,6 +178,7 @@ class Inputs(QWidget):
         self.goBtn.setMinimumSize(400,55)
         layout.addWidget(self.goBtn)
         self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
+        self.abortBtn.setEnabled(False)
         self.abortBtn.setMinimumSize(400,55)
         layout.addWidget(self.abortBtn)
         #add a spacer on the bottom
@@ -453,6 +454,7 @@ class IVColumn1(QWidget):
         layout.addWidget(self.goBtn)
 
         self.abortBtn = ColoredButton('Abort', rgb = (255,0,0))
+        self.abortBtn.setEnabled(False)
         self.abortBtn.setMinimumSize(400,55)
         layout.addWidget(self.abortBtn)
 
@@ -473,7 +475,7 @@ class status(QStatusBar):
     '''status bar at the end bottom of the application to display useful information'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-        self.switchLbl = QLabel('switch: 1')
+        self.switchLbl = QLabel('switch: Nan')
         self.fieldLbl= QLabel('field: off')
         self.stateLbl = QLabel("state: Idle")
 

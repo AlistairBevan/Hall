@@ -101,7 +101,7 @@ class HallWorker(QObject):
         lines = []
 
         for i in range(1,9):
-            self.switchSgnl.emit(i)
+            self.switchSgnl.emit(str(i))
             #get the proper switch command
             if i < 7:
                 switchCmd = self.switchDict[str(i)]

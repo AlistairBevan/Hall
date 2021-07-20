@@ -99,16 +99,19 @@ class MainWindow(qtw.QMainWindow):
         self.IVColumn1.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
-        self.IVColumn1.switches.currentIndexChanged.connect(lambda:
-            self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText()))
 
+    #enabling and disabling the proper buttons to prevent crashing
     def disableGo(self):
         self.IVColumn1.goBtn.setEnabled(False)
         self.hallInputs.goBtn.setEnabled(False)
+        self.IVColumn1.abortBtn.setEnabled(True)
+        self.hallInputs.abortBtn.setEnabled(True)
 
     def enableGo(self):
         self.IVColumn1.goBtn.setEnabled(True)
         self.hallInputs.goBtn.setEnabled(True)
+        self.IVColumn1.abortBtn.setEnabled(False)
+        self.hallInputs.abortBtn.setEnabled(False)
 
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
@@ -128,11 +131,14 @@ class MainWindow(qtw.QMainWindow):
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
+        #connects signals from the worker to slots in the GUI such as updating the
+        #current switch on the status bar
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
-            self.hallWorker.deleteLater,self.enableGo, lambda: self.stateLbl.setText('state: Idle')],
+            self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
+            lambda: self.statusBar().switchLbl.setText('switch: Nan')],
             dataPointSlots = [self.hall_Plot.refresh_stats],
             lineSlots = [],
-            fieldSlots = [self.statusBar().fieldLbl.setText],
+            fieldSlots = [lambda state: self.statusBar().fieldLbl.setText('field: ' + state)],
             switchSlots = [lambda switchNumber: self.statusBar().switchLbl.setText('switch: ' + switchNumber)])
         self.hallThread.start()
 
@@ -157,8 +163,11 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
         self.IVThread.finished.connect(self.IVThread.deleteLater)
         self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater,
-            self.enableGo, lambda: self.stateLbl.setText('state: Idle')],
+            self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
+            lambda: self.statusBar().switchLbl.setText('switch: Nan')],
             dataPointSlots = [self.IV_Plot.refresh_stats])
+
+        self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText())
         self.IVThread.start()
 
     def IVAbort(self):
