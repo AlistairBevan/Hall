@@ -102,7 +102,7 @@ class HallWorker(QObject):
 
         for i in range(1,9):
             self.switchSgnl.emit(str(i))
-            #get the proper switch command
+
             if i < 7:
                 switchCmd = self.switchDict[str(i)]
             else:#repeats 5 and 6
@@ -110,9 +110,9 @@ class HallWorker(QObject):
             self.scanner.write(switchCmd)
             if i == 5:
                 #turn on the field when we get to the fifth switch
-                self.fieldState.emit('On')
+                self.fieldState.emit('On')#update the GUI
                 self.fieldController.write(f'CF{self.field}')
-                time.sleep(self.fieldDelay)#takes time for the field to ramp up
+                time.sleep(self.fieldDelay)
 
             if i == 7:
                 #reverse the field when we get to the seventh switch

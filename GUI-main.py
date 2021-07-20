@@ -42,7 +42,6 @@ class MainWindow(qtw.QMainWindow):
         #start making the first tab
         #make the first column
         self.hallInputs = Inputs()
-
         self.hallLayout.addWidget(self.hallInputs)
 
         #make the second column
@@ -102,12 +101,14 @@ class MainWindow(qtw.QMainWindow):
 
     #enabling and disabling the proper buttons to prevent crashing
     def disableGo(self):
+        '''disables the go buttons and enables the abort buttons'''
         self.IVColumn1.goBtn.setEnabled(False)
         self.hallInputs.goBtn.setEnabled(False)
         self.IVColumn1.abortBtn.setEnabled(True)
         self.hallInputs.abortBtn.setEnabled(True)
 
     def enableGo(self):
+        '''enables the go buttons and disables the abort buttons'''
         self.IVColumn1.goBtn.setEnabled(True)
         self.hallInputs.goBtn.setEnabled(True)
         self.IVColumn1.abortBtn.setEnabled(False)
@@ -116,23 +117,23 @@ class MainWindow(qtw.QMainWindow):
     def hallGo(self):
         '''run when you press go, sets up thread and starts it'''
         self.disableGo()
+        #collect the inputs as a dictionary from the input widget
         inputs = self.hallInputs.textDict()
         current = inputs['current']
         filepath = self.belowGraph.pathInput.text()
+        #clear and set the limits of the plot
         self.hall_Plot.cla()
         self.hall_Plot.set_xlim(-current*1.05, current*1.05)
         self.hallThread = qtc.QThread()
         #the "**inputs" converts the dictionary into keyword arguments and since
-        #I formatted the textDict() to return the proper names this will save some writing
-        #initializing all the inputs
+        #I formatted the textDict() to return the proper names for the variables this will save some writing
         self.hallWorker = HallWorker(voltmeter = self.voltmeter, currentSource = self.currentSource,
                             scanner = self.scanner, fieldController = self.fieldController,
                             filepath = filepath, **inputs)
+        #prepares the threading
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
-        #connects signals from the worker to slots in the GUI such as updating the
-        #current switch on the status bar
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
             self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
             lambda: self.statusBar().switchLbl.setText('switch: Nan')],
