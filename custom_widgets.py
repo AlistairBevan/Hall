@@ -215,19 +215,19 @@ class FitResults1(QFrame):
 
 
         layout = QVBoxLayout()
-        self.R1Lbl = QLabel('R1 (Ohm)')
-        layout.addWidget(self.R1Lbl)
+        self.pSheet1Lbl = QLabel('pSheet1 (Ohm)')
+        layout.addWidget(self.pSheet1Lbl)
 
-        self.R1Display = QLineEdit()
-        self.R1Display.setReadOnly(True)
-        layout.addWidget(self.R1Display)
+        self.pSheet1Display = QLineEdit()
+        self.pSheet1Display.setReadOnly(True)
+        layout.addWidget(self.pSheet1Display)
 
-        self.R2Lbl = QLabel('R2 (Ohm)')
-        layout.addWidget(self.R2Lbl)
+        self.pSheet2Lbl = QLabel('pSheet2 (Ohm)')
+        layout.addWidget(self.pSheet2Lbl)
 
-        self.R2Display = QLineEdit()
-        self.R2Display.setReadOnly(True)
-        layout.addWidget(self.R2Display)
+        self.pSheet2Display = QLineEdit()
+        self.pSheet2Display.setReadOnly(True)
+        layout.addWidget(self.pSheet2Display)
 
         self.Rxy1Lbl = QLabel('Rxy1 (Ohm)')
         layout.addWidget(self.Rxy1Lbl)
@@ -243,19 +243,19 @@ class FitResults1(QFrame):
         self.Rxy2Display.setReadOnly(True)
         layout.addWidget(self.Rxy2Display)
 
-        self.Ratio1Lbl = QLabel('Ratio1')
-        layout.addWidget(self.Ratio1Lbl)
+        self.q1Lbl = QLabel('q1')
+        layout.addWidget(self.q1Lbl)
 
-        self.Ratio1Display = QLineEdit()
-        self.Ratio1Display.setReadOnly(True)
-        layout.addWidget(self.Ratio1Display)
+        self.q1Display = QLineEdit()
+        self.q1Display.setReadOnly(True)
+        layout.addWidget(self.q1Display)
 
-        self.Ratio2Lbl = QLabel('Ratio2')
-        layout.addWidget(self.Ratio2Lbl)
+        self.q2Lbl = QLabel('q2')
+        layout.addWidget(self.q2Lbl)
 
-        self.Ratio2Display = QLineEdit()
-        self.Ratio2Display.setReadOnly(True)
-        layout.addWidget(self.Ratio2Display)
+        self.q2Display = QLineEdit()
+        self.q2Display.setReadOnly(True)
+        layout.addWidget(self.q2Display)
 
         self.FfactorLbl = QLabel('Ffactor')
         layout.addWidget(self.FfactorLbl)
@@ -278,13 +278,6 @@ class FitResults1(QFrame):
         self.setMinimumSize(100,500)
         self.setMaximumSize(200,1000)
 
-    def textDict(self) -> dict:
-        '''return a dictionary of the displayed text'''
-        dict = {'R1': self.R1Display.text(), 'R2': self.R2Display.text(),
-                'Rxy1': self.Rxy1Display.text(), 'Rxy1': self.Rxy1Display.text(),
-                'Ratio1': self.Ratio1Display.text(), 'Ratio2': self.Ratio2Display.text(),
-                'HallRatio1': self.HallRatioDisplay.text(), 'Ffactor': self.FfactorDisplay.text()}
-        return
 
 class FitResults2(QFrame):
     '''widget to display the results, located on the right side'''
