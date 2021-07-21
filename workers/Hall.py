@@ -22,10 +22,10 @@ class HallWorker(QObject):
                         '5': ':clos (@1!1!1,1!2!4,1!3!2,1!4!3)',
                         '6': ':clos (@1!1!4,1!2!2,1!3!3,1!4!1)',}
 
-    intgrtTimeDict: dict = {'~2s': 'S0P1', '~5s': 'S0P2', '~10s': 'S2P1', '~20s': 'S0P3'}
+    intgrtTimeDict: dict = {'~2s': 'S1P1', '~5s': 'S0P1', '~10s': 'S0P2', '~20s': 'S2P1'}
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
-        scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '',
+        scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
         rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
         temp: float = 0, thickness: float = 0, dataPoints: int = 1, field: int = 0,
         fieldDelay: float = 0, filepath: str = '', sampleID: str = '') -> None:
@@ -35,9 +35,11 @@ class HallWorker(QObject):
         super().__init__()
         self.voltmeter = voltmeter
         self.currentSource = currentSource
+        voltLimCmd = f"V{voltLim:.4e}X"
+        self.currentSource.write(voltLimCmd)
         self.scanner = scanner
         self.fieldController = fieldController
-        self.intgrtTimeCmd = self.intgrtTimeDict['~2s']
+        self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
         self.rangeCtrl = rangeCtrl
         self.current = current
         self.dwell = dwell

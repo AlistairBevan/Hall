@@ -16,7 +16,7 @@ class IVWorker(QObject):
                         '5': ':clos (@1!1!1,1!2!4,1!3!2,1!4!3)',
                         '6': ':clos (@1!1!4,1!2!2,1!3!3,1!4!1)',}
 
-    intgrtTimeDict: dict = {'2': 'S0P1', '5': 'S0P2', '10': 'S2P1', '20': 'S0P3'}
+    intgrtTimeDict: dict = {'~2s': 'S1P1', '~5s': 'S0P1', '~10s': 'S0P2', '~20s': 'S2P1'}
 
     def __init__(self, voltmeter: Resource = None, currentSource: Resource = None,
             scanner: Resource = None):
@@ -27,12 +27,12 @@ class IVWorker(QObject):
         self.currentValues = np.array([])
         self.switchCmd = ''
 
-    def setInputs(self, switchNumber: str = '', intgrtTime: int = 5, current: float = 0,
+    def setInputs(self, switchNumber: str = '', intgrtTime: str = '~5s', current: float = 0,
                     voltLim: float = 10) -> None:
         '''sets the user inputs to the correct values'''
         self.currentValues = np.linspace(-current, current, 11)
         self.switchCmd = self.switchDict[switchNumber]
-        self.intgrtTimeCmd = self.intgrtTimeDict['2']
+        self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
         voltLimCmd = f"V{voltLim:.4e}X"
         self.currentSource.write(voltLimCmd)
 
@@ -52,6 +52,7 @@ class IVWorker(QObject):
         self.clearDevices()
         #configuring the voltmeter based on the labview
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
+        print(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.scanner.write(self.switchCmd)#set the selected switch
         self.currentSource.write('F1XL1 B1')
 

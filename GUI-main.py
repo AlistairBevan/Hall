@@ -25,6 +25,8 @@ class MainWindow(qtw.QMainWindow):
         '''sets up the instruments for use'''
         rm = pyvisa.ResourceManager()
         self.voltmeter = rm.open_resource('GPIB0::2::INSTR')
+        #in ms change the timeout time to be longer for the longer integrating times
+        self.voltmeter.timeout = 25000
         self.scanner = rm.open_resource('GPIB0::7::INSTR')
         self.currentSource = rm.open_resource('GPIB0::12::INSTR')
         self.fieldController = rm.open_resource('GPIB0::3::INSTR')
@@ -151,14 +153,13 @@ class MainWindow(qtw.QMainWindow):
         self.disableGo()
         inputs = self.IVColumn1.textDict()
         current = float(inputs['current'])
-        switchNumber = inputs['switch']
         self.IV_Plot.cla()
         self.IV_Plot.set_xlim(-current*1.05, current*1.05)
         self.IVThread = qtc.QThread()
         self.IVWorker = IVWorker(voltmeter = self.voltmeter,
                                  scanner = self.scanner,
                                  currentSource = self.currentSource,)
-        self.IVWorker.setInputs(switchNumber = switchNumber, current = current)
+        self.IVWorker.setInputs(**inputs)
         self.IVWorker.moveToThread(self.IVThread)
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
         self.IVThread.finished.connect(self.IVThread.deleteLater)

@@ -465,10 +465,10 @@ class IVColumn1(QWidget):
         self.setMaximumSize(200,1000)
 
     def textDict(self) -> dict:
-        dict = {'current': self.currentInput.text(),
-                'switch': self.switches.currentText(),
-                'IntgrtTime': self.integratingInput.currentText(),
-                'voltLim': self.voltLimitInput.text()}
+        dict = {'current': float(self.currentInput.text()),
+                'switchNumber': self.switches.currentText(),
+                'intgrtTime': self.integratingInput.currentText(),
+                'voltLim': float(self.voltLimitInput.text())}
         return dict
 
 class status(QStatusBar):
