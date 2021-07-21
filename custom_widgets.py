@@ -476,8 +476,11 @@ class status(QStatusBar):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.switchLbl = QLabel('switch: Nan')
+        # self.switchLbl.setStyleSheet('QLabel {border: 0 px }')
         self.fieldLbl = QLabel('field: off')
+        # self.fieldLbl.setStyleSheet('QLabel {border: 0 px }')
         self.stateLbl = QLabel("state: Idle")
+        # self.stateLbl.setStyleSheet('QLabel {border: 0 px }')
 
         self.addPermanentWidget(self.stateLbl)
         self.addPermanentWidget(self.fieldLbl)
