@@ -97,11 +97,11 @@ class HallWorker(QObject):
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
         self.powerOnField()
-        self.clearDevices()
+        self.resetDevices()
         lines = []
 
         for i in range(1,9):
-            self.switchSgnl.emit(str(i))
+            self.switchSgnl.emit(str(i))#notify the gui what switch is selected
 
             if i < 7:
                 switchCmd = self.switchDict[str(i)]
@@ -110,7 +110,7 @@ class HallWorker(QObject):
             self.scanner.write(switchCmd)
             if i == 5:
                 #turn on the field when we get to the fifth switch
-                self.fieldState.emit('On')#update the GUI
+                self.fieldState.emit('On')#update the GUI field: display
                 self.fieldController.write(f'CF{self.field}')
                 time.sleep(self.fieldDelay)
 
@@ -118,6 +118,7 @@ class HallWorker(QObject):
                 #reverse the field when we get to the seventh switch
                 self.reverseField()
                 #ramp back up to the desired field
+                self.fieldState.emit('On - Reversed')#update GUI field: display
                 self.fieldController.write(f'CF{self.field}')
                 time.sleep(self.fieldDelay)
 
@@ -125,7 +126,7 @@ class HallWorker(QObject):
             #iterate throught the current values measuring voltage
             for current in self.currentValues:
                 if self.abort:#check for an abort call
-                    self.clearDevices()
+                    self.resetDevices()
                     self.finished.emit()
                     return
 
@@ -139,18 +140,20 @@ class HallWorker(QObject):
             lines.append(np.array(singleLine))
 
 
-        self.clearDevices()
+
         #when were done we need to reverse the field back again
-        self.fieldController.write('SO4')
+        self.reverseField()
+        self.resetDevices()
         time.sleep(2*self.fieldDelay)
         self.finished.emit()
         print(lines)
         print('done')
 
 
-    def clearDevices(self):
+    def resetDevices(self):
         self.currentSource.write('K0X')
         self.currentSource.write('I0.000E+0X')
         self.scanner.write(':open all')
+        self.switchSgnl.emit('n/a')
         self.fieldController.write('CF0')
-        self.fieldState.emit('off')
+        self.fieldState.emit('Off')

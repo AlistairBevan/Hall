@@ -475,13 +475,16 @@ class status(QStatusBar):
     '''status bar at the bottom of the application to display useful information'''
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-        self.switchLbl = QLabel('switch: Nan')
-        # self.switchLbl.setStyleSheet('QLabel {border: 0 px }')
-        self.fieldLbl = QLabel('field: off')
-        # self.fieldLbl.setStyleSheet('QLabel {border: 0 px }')
+        self.setStyleSheet('QStatusBar::item {border: None;}')
+        self.switchLbl = QLabel('switch: n/a')
+        self.fieldLbl = QLabel('field: Off')
         self.stateLbl = QLabel("state: Idle")
-        # self.stateLbl.setStyleSheet('QLabel {border: 0 px }')
-
+        spacer = QWidget()
+        spacer.setFixedWidth(50)
+        spacer2 = QWidget()
+        spacer2.setFixedWidth(50)
         self.addPermanentWidget(self.stateLbl)
+        self.addPermanentWidget(spacer)
         self.addPermanentWidget(self.fieldLbl)
+        self.addPermanentWidget(spacer2)
         self.addPermanentWidget(self.switchLbl)

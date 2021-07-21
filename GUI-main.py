@@ -135,8 +135,7 @@ class MainWindow(qtw.QMainWindow):
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
-            self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
-            lambda: self.statusBar().switchLbl.setText('switch: Nan')],
+            self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle')],
             dataPointSlots = [self.hall_Plot.refresh_stats],
             lineSlots = [],
             fieldSlots = [lambda state: self.statusBar().fieldLbl.setText('field: ' + state)],
@@ -165,7 +164,7 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.finished.connect(self.IVThread.deleteLater)
         self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater,
             self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
-            lambda: self.statusBar().switchLbl.setText('switch: Nan')],
+            lambda: self.statusBar().switchLbl.setText('switch: n/a')],
             dataPointSlots = [self.IV_Plot.refresh_stats])
 
         self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText())
