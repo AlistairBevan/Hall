@@ -44,7 +44,7 @@ class Fitter(QObject):
         qAve = np.mean([q1,q2])
         results['qAve'] = qAve
 
-        ff = root(lambda x: self.fitfunc(x,qAve), 0.5)
+        ff = root(lambda x: self.fitfunc(x,qAve), 0.5).x
 
         results['ff'] = ff
         #get the sheet resistivity pg.10 and pg.11
