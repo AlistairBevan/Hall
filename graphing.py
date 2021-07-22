@@ -262,6 +262,8 @@ class View(QGraphicsView):
     #resets the plot
     def cla(self):
         '''clear the plots of data'''
+        while len(self.m_callouts) != 0:
+            self.scene().removeItem(self.m_callouts.pop())
         self.ydata = []
         self.xdata = []
         self.max = 1e-7

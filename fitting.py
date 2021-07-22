@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal
 from miscellaneous import available_name
-from scipy.optimize import root
+from scipy.optimize import brentq
 
 class Fitter(QObject):
 
@@ -18,7 +18,7 @@ class Fitter(QObject):
         return p
 
     def fitfunc(f,q):
-        return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)
+        return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)/np.log(2)
 
     def calculateResults(self, lines: List, thickness: float):
         results = {}
@@ -44,7 +44,7 @@ class Fitter(QObject):
         qAve = np.mean([q1,q2])
         results['qAve'] = qAve
 
-        ff = root(lambda x: self.fitfunc(x,qAve), 0.5).x
+        ff = brentq(lambda x: self.fitfunc(x,qAve), 1e-4, 1, xtol = 1e-13)
 
         results['ff'] = ff
         #get the sheet resistivity pg.10 and pg.11
@@ -99,7 +99,7 @@ class Fitter(QObject):
         results['bulkConc'] = bulkConc
         hallMobility = hallCoef/pBulk
         results['hallMob'] = hallMobility
-        #emit the results to be displayed and saved
+        #emit the results to be displayed and written to file
         done.emit(results)
         return results
 
