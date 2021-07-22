@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal
 from miscellaneous import available_name
+from scipy.optimize import root
 
 class Fitter(QObject):
 
@@ -15,6 +16,9 @@ class Fitter(QObject):
 
             p.append(np.polyfit(x,y,1))
         return p
+
+    def fitfunc(f,q):
+        return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)
 
     def calculateResults(self, lines: List, thickness: float):
         results = {}
@@ -40,25 +44,21 @@ class Fitter(QObject):
         qAve = np.mean([q1,q2])
         results['qAve'] = qAve
 
-        cf = 0
-        ff = 1
-        while abs(cf - ff) > 0.001:
-            cf = ff
-            ff = np.log(2)/(np.log(2*np.cosh((qAve - 1)/(qAve + 1)*np.log(2)/cf)))
+        ff = root(lambda x: self.fitfunc(x,qAve), 0.5)
 
         results['ff'] = ff
         #get the sheet resistivity pg.10 and pg.11
-        pSheet1 = np.mean([R1,R2])*np.pi/np.log(2)*ff
-        pSheet2 = np.mean([R3,R4])*np.pi/np.log(2)*ff
-        results['pSheet1'] = pSheet1
-        results['pSheet2'] = pSheet2
+        SheetRes1 = np.mean([R1,R2])*np.pi/np.log(2)*ff
+        SheetRes2 = np.mean([R3,R4])*np.pi/np.log(2)*ff
+        results['SheetRes1'] = SheetRes1
+        results['SheetRes2'] = SheetRes2
 
-        pSheet = np.mean([pSheet1,pSheet2])
-        results['pSheet' = pSheet]
+        SheetRes = np.mean([SheetRes1,SheetRes2])
+        results['SheetRes'] = SheetRes
 
         #pg.13
-        pBulk1 = pSheet1 * thickness
-        pBulk2 = pSheet2 * thickness
+        pBulk1 = SheetRes1 * thickness
+        pBulk2 = SheetRes2 * thickness
         results['pBulk1'] = pBulk1
         results['pBulk2'] = pBulk2
         pBulk = np.mean([pBulk1,pBulk2])
@@ -71,21 +71,25 @@ class Fitter(QObject):
         results['Rxy2'] = Rxy2
 
         Rxy = np.mean([Rxy1, Rxy2])
-        results['Rxy'] = Rxy
+        results['AvgTransRes'] = Rxy
 
         #pg.16?
         rhs1 = Rxy1 * (100000000/B)
         rhs2 = Rxy2 * (100000000/B)
-
+        results['rhs1'] = rhs1
+        results['rhs2'] = rhs2
         rhs = np.mean([rhs1,rhs2])
+        results['rhs'] = rhs
 
         if Rxy1 < Rxy2:
             hallRatio = Rxy1/Rxy2
         else:
             hallRatio = Rxy2/Rxy1
-
+        results['hallRatio'] = hallRatio
         rh1 = rhs1 * thickness
         rh2 = rhs2 * thickness
+        results['rh1'] = rh1
+        results['rh2'] = rh2
 
         hallCoef = np.mean([rh1, rh2])
         results['hallCoef'] = hallCoef
@@ -93,7 +97,8 @@ class Fitter(QObject):
         results['sheetConc'] = sheetConc
         bulkConc = sheetConc/(0.0001 * thickness)
         results['bulkConc'] = bulkConc
-
+        hallMobility = hallCoef/pBulk
+        results['hallMob'] = hallMobility
         #emit the results to be displayed and saved
         done.emit(results)
         return results

@@ -215,19 +215,19 @@ class FitResults1(QFrame):
 
 
         layout = QVBoxLayout()
-        self.pSheet1Lbl = QLabel('pSheet1 (Ohm)')
-        layout.addWidget(self.pSheet1Lbl)
+        self.SheetRes1Lbl = QLabel('Sheet Res 1 (Ohm)')
+        layout.addWidget(self.SheetRes1Lbl)
 
-        self.pSheet1Display = QLineEdit()
-        self.pSheet1Display.setReadOnly(True)
-        layout.addWidget(self.pSheet1Display)
+        self.SheetRes1Display = QLineEdit()
+        self.SheetRes1Display.setReadOnly(True)
+        layout.addWidget(self.SheetRes1Display)
 
-        self.pSheet2Lbl = QLabel('pSheet2 (Ohm)')
-        layout.addWidget(self.pSheet2Lbl)
+        self.SheetRes2Lbl = QLabel('Sheet Res 2 (Ohm)')
+        layout.addWidget(self.SheetRes2Lbl)
 
-        self.pSheet2Display = QLineEdit()
-        self.pSheet2Display.setReadOnly(True)
-        layout.addWidget(self.pSheet2Display)
+        self.SheetRes2Display = QLineEdit()
+        self.SheetRes2Display.setReadOnly(True)
+        layout.addWidget(self.SheetRes2Display)
 
         self.Rxy1Lbl = QLabel('Rxy1 (Ohm)')
         layout.addWidget(self.Rxy1Lbl)
@@ -275,8 +275,8 @@ class FitResults1(QFrame):
                                 vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
         self.setLayout(layout)
-        self.setMinimumSize(100,500)
-        self.setMaximumSize(200,1000)
+        self.setMinimumSize(120,500)
+        self.setMaximumSize(300,1000)
 
 
 class FitResults2(QFrame):

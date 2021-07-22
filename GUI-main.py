@@ -171,6 +171,22 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText())
         self.IVThread.start()
 
+    def showResults(self,results):
+        self.fitResults1.SheetRes1Display.setText(results['SheetRes1'])
+        self.fitResults1.SheetRes2Display.setText(results['SheetRes2'])
+        self.fitResults1.Rxy1Display.setText(results['Rxy1'])
+        self.fitResults1.Rxy2Display.setText(results['Rxy2'])
+        self.fitResults1.q1Display.setText(results['q1'])
+        self.fitResults1.q2Display.setText(results['q2'])
+        self.fitResults1.FfactorDisplay.setText(results['ff'])
+        self.fitResults1.HallRatioDisplay.setText(results['hallRatio'])
+        self.fitResults2.AvgSheetResDisplay.setText(results[''])
+        self.fitResults2.AvgTransResDisplay.setText(results['AvgTransRes'])
+        self.fitResults2.SheetConcDisplay.setText(results['sheetConc'])
+        self.fitResults2.BulkConcDisplay.setText(results['bulkConc'])
+        self.fitResults2.HallCoefDisplay.setText(results['hallCoef'])
+        self.fitResults2.HallMobilityDisplay.setText(results['hallMob'])
+
     def IVAbort(self):
         '''stops the IV thread'''
         self.IVWorker.abort = True
