@@ -44,7 +44,12 @@ class Fitter(QObject):
         qAve = np.mean([q1,q2])
         results['qAve'] = qAve
 
-        ff = brentq(lambda x: self.fitfunc(x,qAve), 1e-4, 1, xtol = 1e-13)
+        cf = 0
+        ff = 1
+        while(abs(cf - ff) > 0.001):
+            cf = ff
+            ff = np.log(2)/(np.log(2*np.cosh((qAve - 1)/(qAve + 1)*np.log(2)/cf)))
+            counts += 1
 
         results['ff'] = ff
         #get the sheet resistivity pg.10 and pg.11
