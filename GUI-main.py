@@ -10,6 +10,7 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from datetime import datetime
 from graphing import View
+from fitting import Fitter, Writer
 
 class MainWindow(qtw.QMainWindow):
 
@@ -19,6 +20,8 @@ class MainWindow(qtw.QMainWindow):
         self.makeUI()
         self.connectButtons()
         self.setupInstruments()
+        self.fitter = Fitter()
+        self.writer = Writer()
         self.show()
 
     def setupInstruments(self):
@@ -127,11 +130,12 @@ class MainWindow(qtw.QMainWindow):
         self.hall_Plot.cla()
         self.hall_Plot.set_xlim(-current*1.05, current*1.05)
         self.hallThread = qtc.QThread()
-        #the "**inputs" converts the dictionary into keyword arguments and since
-        #I formatted the textDict() to return the proper names for the variables this will save some writing
         self.hallWorker = HallWorker(voltmeter = self.voltmeter, currentSource = self.currentSource,
                             scanner = self.scanner, fieldController = self.fieldController,
-                            filepath = filepath, **inputs)
+                            current = current, dwell = inputs['dwell'], vLim = inputs['vLim'],
+                            dataPoints = inputs['dataPoints'], field = inputs['field'],
+                            fieldDelay = inputs['fieldDelay'], intgrtTime = inputs['intgrtTime'],
+                            rangeCtrl = inputs['rangeCtrl'])
         #prepares the threading
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
@@ -172,20 +176,20 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.start()
 
     def showResults(self,results):
-        #missing the keys for a few of the displays
-        self.fitResults1.SheetRes1Display.setText(results['SheetRes1'])
-        self.fitResults1.SheetRes2Display.setText(results['SheetRes2'])
+        #these should be looked over carefully
+        self.fitResults1.SheetRes1Display.setText(results['sheetRes1'])
+        self.fitResults1.SheetRes2Display.setText(results['sheetRes2'])
         self.fitResults1.Rxy1Display.setText(results['Rxy1'])
         self.fitResults1.Rxy2Display.setText(results['Rxy2'])
         self.fitResults1.q1Display.setText(results['q1'])
         self.fitResults1.q2Display.setText(results['q2'])
         self.fitResults1.FfactorDisplay.setText(results['ff'])
         self.fitResults1.HallRatioDisplay.setText(results['hallRatio'])
-        self.fitResults2.AvgSheetResDisplay.setText(results[''])
+        self.fitResults2.AvgSheetResDisplay.setText(results['sheetRes'])
         self.fitResults2.AvgTransResDisplay.setText(results['AvgTransRes'])
-        self.fitResults2.AvgResDisplay.setText(results[''])
+        self.fitResults2.AvgResDisplay.setText(results['pBulk'])
         self.fitResults2.SheetConcDisplay.setText(results['sheetConc'])
-        self.fitResults2.BulkConcDisplay.setText(results[''])
+        self.fitResults2.BulkConcDisplay.setText(results['bulkConc'])
         self.fitResults2.HallCoefDisplay.setText(results['hallCoef'])
         self.fitResults2.HallMobilityDisplay.setText(results['hallMob'])
 

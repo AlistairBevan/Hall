@@ -27,15 +27,14 @@ class HallWorker(QObject):
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
         scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
         rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
-        temp: float = 0, thickness: float = 0, dataPoints: int = 1, field: int = 0,
-        fieldDelay: float = 0, filepath: str = '', sampleID: str = '') -> None:
+        dataPoints: int = 1, field: int = 0, fieldDelay: float = 0) -> None:
         '''Constructor for the class; stores the relevant information for the thread
         to use since arguments cannot be passed when using moveToThread (might be
         possible with lambda but I think this way is better)'''
         super().__init__()
         self.voltmeter = voltmeter
         self.currentSource = currentSource
-        voltLimCmd = f"V{voltLim:.4e}X"
+        voltLimCmd = f"V{vLim:.4e}X"
         self.currentSource.write(voltLimCmd)
         self.scanner = scanner
         self.fieldController = fieldController
@@ -44,13 +43,9 @@ class HallWorker(QObject):
         self.current = current
         self.dwell = dwell
         self.vLim = vLim
-        self.sampleID = sampleID
-        self.temp = temp
-        self.thickness = thickness
         self.dataPoints = dataPoints
         self.field = field
         self.fieldDelay = fieldDelay
-        self.filepath = available_name(filepath)
         self.currentValues = np.linspace(-current, current, dataPoints)
 
 

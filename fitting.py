@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal
 from miscellaneous import available_name
-from scipy.optimize import brentq
+from typing import List
 
 class Fitter(QObject):
 
@@ -55,11 +55,11 @@ class Fitter(QObject):
         #get the sheet resistivity pg.10 and pg.11
         SheetRes1 = np.mean([R1,R2])*np.pi/np.log(2)*ff
         SheetRes2 = np.mean([R3,R4])*np.pi/np.log(2)*ff
-        results['SheetRes1'] = SheetRes1
-        results['SheetRes2'] = SheetRes2
+        results['sheetRes1'] = SheetRes1
+        results['sheetRes2'] = SheetRes2
 
         SheetRes = np.mean([SheetRes1,SheetRes2])
-        results['SheetRes'] = SheetRes
+        results['sheetRes'] = SheetRes
 
         #pg.13
         pBulk1 = SheetRes1 * thickness
@@ -106,13 +106,12 @@ class Fitter(QObject):
         results['hallMob'] = hallMobility
         #emit the results to be displayed and written to file
         done.emit(results)
-        return results
 
 class Writer:
 
-    def writeToFile(filepath: str, results: dict):
+    def writeToFile(filepath: str, results: dict, sampleInfo: dict):
         filepath = available_name(filepath)
         f = open(filepath, 'a')
         f.write('Header')
         for key in results.keys():
-            f.write(f'{key} + : + {str(results[key])} + \n)
+            f.write(f'{key} + : + {str(results[key])} + \n')
