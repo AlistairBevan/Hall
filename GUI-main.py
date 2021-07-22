@@ -172,6 +172,7 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.start()
 
     def showResults(self,results):
+        #missing the keys for a few of the displays
         self.fitResults1.SheetRes1Display.setText(results['SheetRes1'])
         self.fitResults1.SheetRes2Display.setText(results['SheetRes2'])
         self.fitResults1.Rxy1Display.setText(results['Rxy1'])
@@ -182,8 +183,9 @@ class MainWindow(qtw.QMainWindow):
         self.fitResults1.HallRatioDisplay.setText(results['hallRatio'])
         self.fitResults2.AvgSheetResDisplay.setText(results[''])
         self.fitResults2.AvgTransResDisplay.setText(results['AvgTransRes'])
+        self.fitResults2.AvgResDisplay.setText(results[''])
         self.fitResults2.SheetConcDisplay.setText(results['sheetConc'])
-        self.fitResults2.BulkConcDisplay.setText(results['bulkConc'])
+        self.fitResults2.BulkConcDisplay.setText(results[''])
         self.fitResults2.HallCoefDisplay.setText(results['hallCoef'])
         self.fitResults2.HallMobilityDisplay.setText(results['hallMob'])
 
