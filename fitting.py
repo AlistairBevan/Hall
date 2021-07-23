@@ -19,11 +19,11 @@ class Fitter(QObject):
             slope = np.polyfit(x,y,1)[0]
             mean_y = np.mean(y)
             TSS = np.sum((y - mean_y)**2)
-            RSS = np.sum((line - slope*x)**2)
+            RSS = np.sum((y - slope*x)**2)
             rSqrds.append(1 - RSS/TSS)
             slopes.append(slope)
 
-        self.rsqrdSngl.emit(rSqrds)
+        self.rSqrdSgnl.emit(rSqrds)
         return slopes
 
     def fitfunc(f,q):

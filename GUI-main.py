@@ -189,14 +189,14 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.start()
 
     def showRSqrd(self, rSqrds):
-        self.belowGraph.box1.setText(rSqrds[0])
-        self.belowGraph.box2.setText(rSqrds[1])
-        self.belowGraph.box3.setText(rSqrds[2])
-        self.belowGraph.box4.setText(rSqrds[3])
-        self.belowGraph.box5.setText(rSqrds[4])
-        self.belowGraph.box6.setText(rSqrds[5])
-        self.belowGraph.box7.setText(rSqrds[6])
-        self.belowGraph.box8.setText(rSqrds[7])
+        self.belowGraph.box1.setText(f"{rSqrds[0]:.6f}")
+        self.belowGraph.box2.setText(f"{rSqrds[1]:.6f}")
+        self.belowGraph.box3.setText(f"{rSqrds[2]:.6f}")
+        self.belowGraph.box4.setText(f"{rSqrds[3]:.6f}")
+        self.belowGraph.box5.setText(f"{rSqrds[4]:.6f}")
+        self.belowGraph.box6.setText(f"{rSqrds[5]:.6f}")
+        self.belowGraph.box7.setText(f"{rSqrds[6]:.6f}")
+        self.belowGraph.box8.setText(f"{rSqrds[7]:.6f}")
 
 
     def showResults(self,results):
