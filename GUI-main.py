@@ -11,7 +11,8 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 from datetime import datetime
 from graphing import View
-from fitting import Fitter, Writer
+from fitting import Fitter
+from FileWriting import Writer
 
 class MainWindow(qtw.QMainWindow):
 

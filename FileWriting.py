@@ -25,6 +25,9 @@ class Writer:
         self.sampleID = sampleID
 
     def writeToFile(self, results: dict):
+        # dir = self.filepath[:self.filepath.rfind('/')]
+        # if not os.path.isdir(dir):
+        #     os.makedirs(dir)
         filepath = self.available_name(self.filepath)
         f = open(filepath, 'a')
         f.write(f'sampleId: {self.sampleID}\n')
