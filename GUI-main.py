@@ -104,17 +104,24 @@ class MainWindow(qtw.QMainWindow):
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
         self.hallInputs.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
+
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
+
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
         self.IVColumn1.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
+
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
-        self.fitter.resultSgnl.connect(self.writer.writeToFile)
-        self.fitter.resultSgnl.connect(self.showResults)
-        self.fitter.rSqrdSgnl.connect(self.showRSqrd)
+
+        self.fitter.resultSgnl.connect(self.writer.writeToFile)#writes the results after fitting
+        self.fitter.resultSgnl.connect(self.showResults)#displays the results
+        self.fitter.rSqrdSgnl.connect(self.showRSqrd)#displays the rsqrd on the UI
+        self.fitter.rSqrdSgnl.connect(self.writer.setRSqrd)#gives the righter the r squared values when done
+
         self.hallInputs.sampleInfoWidget.sampleIDInput.textChanged.connect(self.writer.setSampleID)
         self.hallInputs.sampleInfoWidget.tempInput.textEdited.connect(self.writer.setTemp)
         self.hallInputs.sampleInfoWidget.thicknessInput.textChanged.connect(self.writer.setThickness)
+
         self.belowGraph.pathInput.textChanged.connect(self.writer.setFilepath)
 
     #enabling and disabling the proper buttons to prevent crashing

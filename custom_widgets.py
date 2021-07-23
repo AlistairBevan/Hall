@@ -354,7 +354,7 @@ class BelowGraphWidget(QWidget):
 
         self.pathLbl = QLabel('Output File Path')
         layout.addWidget(self.pathLbl)
-        self.pathInput = QLineEdit('C:/Users/lw5968/Documents/Hall Data/test.json')
+        self.pathInput = QLineEdit('C:/Users/lw5968/Documents/Hall Data/test.txt')
         layout.addWidget(self.pathInput)
 
         self.rSqrLbl = QLabel('R-Square Value')

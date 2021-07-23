@@ -145,6 +145,7 @@ class HallWorker(QObject):
         time.sleep(2*self.fieldDelay)
         data['lines'] = lines
         data['field'] = self.field
+        data['current'] = self.current
         data['thickness'] = self.thickness
         self.finished.emit()
         self.lineData.emit(data)

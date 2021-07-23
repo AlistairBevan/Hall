@@ -30,15 +30,16 @@ class Fitter(QObject):
         return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)/np.log(2)
 
     def calculateResults(self, data):
-        print('hello')
         results = {}
         #convert thickness
         thickness = data['thickness'] * 0.0001
+        results['thickness'] = data['thickness']
+        results['field'] = data['field']
+        results['current'] = data['current']
         B = data['field']
         lines = data['lines']
         #get the 8 resistances by fitting the lines
         R1,R2,R3,R4,R5,R6,R7,R8 = self.fit(lines)
-        print(R1)
         results['sw1 R'] = R1
         results['sw2 R'] = R2
         results['sw3 R'] = R3
