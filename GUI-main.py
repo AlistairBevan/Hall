@@ -111,6 +111,7 @@ class MainWindow(qtw.QMainWindow):
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
         self.fitter.resultSgnl.connect(self.writer.writeToFile)
         self.fitter.resultSgnl.connect(self.showResults)
+        self.fitter.rSqrdSgnl.connect(self.showRSqrd)
         self.hallInputs.sampleInfoWidget.sampleIDInput.textChanged.connect(self.writer.setSampleID)
         self.hallInputs.sampleInfoWidget.tempInput.textEdited.connect(self.writer.setTemp)
         self.hallInputs.sampleInfoWidget.thicknessInput.textChanged.connect(self.writer.setThickness)
@@ -186,6 +187,17 @@ class MainWindow(qtw.QMainWindow):
 
         self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText())
         self.IVThread.start()
+
+    def showRSqrd(self, rSqrds):
+        self.belowGraph.box1.setText(rSqrds[0])
+        self.belowGraph.box2.setText(rSqrds[1])
+        self.belowGraph.box3.setText(rSqrds[2])
+        self.belowGraph.box4.setText(rSqrds[3])
+        self.belowGraph.box5.setText(rSqrds[4])
+        self.belowGraph.box6.setText(rSqrds[5])
+        self.belowGraph.box7.setText(rSqrds[6])
+        self.belowGraph.box8.setText(rSqrds[7])
+
 
     def showResults(self,results):
         #these should be looked over carefully

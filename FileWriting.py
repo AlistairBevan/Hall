@@ -1,5 +1,5 @@
 import os
-
+import json
 class Writer:
 
     temp: str = ''
@@ -27,17 +27,15 @@ class Writer:
         self.sampleID = sampleID
 
     def writeToFile(self, results: dict):
-        dir = self.filepath[:self.filepath.rfind('/')]
-        if not os.path.isdir(dir):
+        dir = os.path.dirname(self.filepath)
+        if not os.path.isdir(dir) and dir != '':
             os.makedirs(dir)
         filepath = self.available_name(self.filepath)
-        f = open(filepath, 'a')
-        f.write(f'sampleId: {self.sampleID}\n')
-        f.write(f'temp (K): {self.temp}\n')
-        f.write(f'thickness (um): {self.thickness}\n')
-
-        for key in results.keys():
-            f.write(f'{key}:  {str(results[key])}\n')
+        results['sampleID'] = self.sampleID
+        results['temp'] = self.temp
+        results['thickness'] = self.thickness
+        with open(self.filepath, 'w') as outfile:
+            json.dump(results, outfile, indent = 4)
 
     #avoid overwriting data
     def available_name(self,filename: str) -> str:

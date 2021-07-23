@@ -6,16 +6,25 @@ from typing import List
 class Fitter(QObject):
 
     resultSgnl= pyqtSignal(dict)
+    rSqrdSgnl = pyqtSignal(list)
 
     def fit(self,lines):
-        p = []
+        slopes = []
+        rSqrds = []
+
         for line in lines:
             transposeLine = line.T
             x = transposeLine[0]
             y = transposeLine[1]
+            slope = np.polyfit(x,y,1)[0]
+            mean_y = np.mean(y)
+            TSS = np.sum((y - mean_y)**2)
+            RSS = np.sum((line - slope*x)**2)
+            rSqrds.append(1 - RSS/TSS)
+            slopes.append(slope)
 
-            p.append(np.polyfit(x,y,1)[0])
-        return p
+        self.rsqrdSngl.emit(rSqrds)
+        return slopes
 
     def fitfunc(f,q):
         return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)/np.log(2)
@@ -82,8 +91,8 @@ class Fitter(QObject):
         results['pBulk'] = pBulk
 
         #pg.17
-        Rxy1 = np.mean([R5,R6])
-        Rxy2 = np.mean([R6,R7])
+        Rxy1 = np.mean([-R5,R7])
+        Rxy2 = np.mean([-R6,R8])
         results['Rxy1'] = Rxy1
         results['Rxy2'] = Rxy2
 

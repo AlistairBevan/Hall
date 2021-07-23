@@ -148,7 +148,6 @@ class HallWorker(QObject):
         data['thickness'] = self.thickness
         self.finished.emit()
         self.lineData.emit(data)
-        print(lines)
         print('done')
 
 
