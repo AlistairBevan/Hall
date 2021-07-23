@@ -1,11 +1,12 @@
 import numpy as np
+from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtCore import QObject, pyqtSignal
 from miscellaneous import available_name
 from typing import List
 
 class Fitter(QObject):
 
-    done = pyqtSignal(dict)
+    resultSgnl= pyqtSignal(dict)
 
     def fit(self,lines):
         p = []
@@ -14,19 +15,30 @@ class Fitter(QObject):
             x = transposeLine[0]
             y = transposeLine[1]
 
-            p.append(np.polyfit(x,y,1))
+            p.append(np.polyfit(x,y,1)[0])
         return p
 
     def fitfunc(f,q):
         return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)/np.log(2)
 
-    def calculateResults(self, lines: List, thickness: float):
+    def calculateResults(self, data):
+        print('hello')
         results = {}
         #convert thickness
-        thickness = thickness * 0.0001
+        thickness = data['thickness'] * 0.0001
+        B = data['field']
+        lines = data['lines']
         #get the 8 resistances by fitting the lines
         R1,R2,R3,R4,R5,R6,R7,R8 = self.fit(lines)
-
+        print(R1)
+        results['sw1 R'] = R1
+        results['sw2 R'] = R2
+        results['sw3 R'] = R3
+        results['sw4 R'] = R4
+        results['sw5 R'] = R5
+        results['sw6 R'] = R6
+        results['sw7 R'] = R7
+        results['sw8 R'] = R8
         #choose the larger of the ratios of R1/R2 see pg.10 of Hall Effect Measurement Handbook
         if R1 < R2:
             q1 = R2/R1
@@ -36,12 +48,13 @@ class Fitter(QObject):
         results['q1'] = q1
         #choose the larger of the ratios of R3/R4 see pg.11 of Hall Effect Measurement Handbook
         if R4 < R3:
-            q2 = R4/R3
-        else:
             q2 = R3/R4
-        results['q2':q2]
+        else:
+            q2 = R4/R3
+
+        results['q2'] = q2
         #get the average pg.11
-        qAve = np.mean([q1,q2])
+        qAve = np.mean([abs(q1),abs(q2)])
         results['qAve'] = qAve
 
         cf = 0
@@ -49,7 +62,7 @@ class Fitter(QObject):
         while(abs(cf - ff) > 0.001):
             cf = ff
             ff = np.log(2)/(np.log(2*np.cosh((qAve - 1)/(qAve + 1)*np.log(2)/cf)))
-            counts += 1
+
 
         results['ff'] = ff
         #get the sheet resistivity pg.10 and pg.11
@@ -87,9 +100,9 @@ class Fitter(QObject):
         results['rhs'] = rhs
 
         if Rxy1 < Rxy2:
-            hallRatio = Rxy1/Rxy2
-        else:
             hallRatio = Rxy2/Rxy1
+        else:
+            hallRatio = Rxy1/Rxy2
         results['hallRatio'] = hallRatio
         rh1 = rhs1 * thickness
         rh2 = rhs2 * thickness
@@ -100,18 +113,46 @@ class Fitter(QObject):
         results['hallCoef'] = hallCoef
         sheetConc = 1/(rhs * 1.6022e-19)
         results['sheetConc'] = sheetConc
-        bulkConc = sheetConc/(0.0001 * thickness)
+        bulkConc = sheetConc/(thickness)
         results['bulkConc'] = bulkConc
-        hallMobility = hallCoef/pBulk
+        hallMobility = abs(hallCoef/pBulk)
         results['hallMob'] = hallMobility
         #emit the results to be displayed and written to file
-        done.emit(results)
+        self.resultSgnl.emit(results)
 
 class Writer:
 
-    def writeToFile(filepath: str, results: dict, sampleInfo: dict):
-        filepath = available_name(filepath)
+    temp: str = ''
+    sampleID: str = ''
+    thickness: str = ''
+    filepath: str = ''
+    
+    def __init__(self,sampleID,temp,thickness,filepath):
+        self.temp = temp
+        self.sampleID = sampleID
+        self.thickness = thickness
+        self.filepath = filepath
+
+    #write setter methods to be connected to signals
+    def setTemp(self, temp: str):
+        self.temp = temp
+
+    def setThickness(self, thickness: str):
+        self.thickness = thickness
+
+    def setFilepath(self, filepath: str):
+        self.filepath = filepath
+
+    def setSampleID(self, sampleID: str):
+        self.sampleID = sampleID
+
+    def writeToFile(self, results: dict):
+        filepath = available_name(self.filepath)
+        print(filepath)
         f = open(filepath, 'a')
-        f.write('Header')
+        f.write(f'sampleId: {self.sampleID}\n')
+        f.write(f'temp (K): {self.temp}\n')
+        f.write(f'thickness (um): {self.thickness}\n')
+
         for key in results.keys():
-            f.write(f'{key} + : + {str(results[key])} + \n')
+            f.write(f'{key}:  {str(results[key])}\n')

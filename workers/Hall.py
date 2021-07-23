@@ -11,7 +11,7 @@ class HallWorker(QObject):
     responsive'''
     finished = pyqtSignal()
     dataPoint = pyqtSignal(list)
-    lineData = pyqtSignal(list)
+    lineData = pyqtSignal(dict)
     fieldState = pyqtSignal(str)
     switchSgnl = pyqtSignal(str)
     abort = False
@@ -27,7 +27,7 @@ class HallWorker(QObject):
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
         scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
         rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
-        dataPoints: int = 1, field: int = 0, fieldDelay: float = 0) -> None:
+        dataPoints: int = 1, field: int = 0, fieldDelay: float = 0, thickness: float = 0) -> None:
         '''Constructor for the class; stores the relevant information for the thread
         to use since arguments cannot be passed when using moveToThread (might be
         possible with lambda but I think this way is better)'''
@@ -47,10 +47,11 @@ class HallWorker(QObject):
         self.field = field
         self.fieldDelay = fieldDelay
         self.currentValues = np.linspace(-current, current, dataPoints)
+        self.thickness = thickness
 
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
-              lineSlots: List = [], fieldSlots: List = [], switchSlots: List = []) -> None:
+              dataSlots: List = [], fieldSlots: List = [], switchSlots: List = []) -> None:
         '''connect all the signals and slots, takes lists of the slots desired to be
         connected, one list for each different signal this class has'''
         #connect the signals to desired slots
@@ -60,8 +61,8 @@ class HallWorker(QObject):
         for dataPointSlot in dataPointSlots:
             self.dataPoint.connect(dataPointSlot)
 
-        for LineSlot in lineSlots:
-            self.lineData.connect(lineSlot)
+        for dataSlot in dataSlots:
+            self.lineData.connect(dataSlot)
 
         for fieldSlot in fieldSlots:
             self.fieldState.connect(fieldSlot)
@@ -95,6 +96,7 @@ class HallWorker(QObject):
         self.currentSource.write('F1XL1 B1')
         self.powerOnField()
         self.resetDevices()
+        data = {}
         lines = []
 
         for i in range(1,9):
@@ -142,7 +144,11 @@ class HallWorker(QObject):
         self.reverseField()
         self.resetDevices()
         time.sleep(2*self.fieldDelay)
+        data['lines'] = lines
+        data['field'] = self.field
+        data['thickness'] = self.thickness
         self.finished.emit()
+        self.lineData.emit(data)
         print(lines)
         print('done')
 

@@ -1,6 +1,7 @@
 import sys
 import pyvisa
 import time
+import numpy as np
 from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
                             ColoredButton,IVColumn1,status)
 from workers.IV import IVWorker
@@ -18,10 +19,13 @@ class MainWindow(qtw.QMainWindow):
         '''MainWindow Constructor'''
         super().__init__()
         self.makeUI()
-        self.connectButtons()
-        self.setupInstruments()
         self.fitter = Fitter()
-        self.writer = Writer()
+        self.writer = Writer(self.hallInputs.sampleInfoWidget.sampleIDInput.text(),
+            self.hallInputs.sampleInfoWidget.tempInput.text(),
+            self.hallInputs.sampleInfoWidget.thicknessInput.text(),
+            self.belowGraph.pathInput.text())
+        self.connectSignals()
+        self.setupInstruments()
         self.show()
 
     def setupInstruments(self):
@@ -93,8 +97,9 @@ class MainWindow(qtw.QMainWindow):
         self.centralWidget().addTab(self.IVWidget, "IV-Test")
         self.resize(800,600)
 
-    def connectButtons(self):
-        '''Connects the buttons to the proper logic'''
+    def connectSignals(self):
+        '''Connects the buttons to the proper logic as well as other functions
+        essentially chaining things together'''
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
         self.hallInputs.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
@@ -103,6 +108,12 @@ class MainWindow(qtw.QMainWindow):
         self.IVColumn1.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
+        self.fitter.resultSgnl.connect(self.writer.writeToFile)
+        self.fitter.resultSgnl.connect(self.showResults)
+        self.hallInputs.sampleInfoWidget.sampleIDInput.textChanged.connect(self.writer.setSampleID)
+        self.hallInputs.sampleInfoWidget.tempInput.textEdited.connect(self.writer.setTemp)
+        self.hallInputs.sampleInfoWidget.thicknessInput.textChanged.connect(self.writer.setThickness)
+        self.belowGraph.pathInput.textChanged.connect(self.writer.setFilepath)
 
     #enabling and disabling the proper buttons to prevent crashing
     def disableGo(self):
@@ -135,7 +146,7 @@ class MainWindow(qtw.QMainWindow):
                             current = current, dwell = inputs['dwell'], vLim = inputs['vLim'],
                             dataPoints = inputs['dataPoints'], field = inputs['field'],
                             fieldDelay = inputs['fieldDelay'], intgrtTime = inputs['intgrtTime'],
-                            rangeCtrl = inputs['rangeCtrl'])
+                            rangeCtrl = inputs['rangeCtrl'], thickness = inputs['thickness'])
         #prepares the threading
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
@@ -143,7 +154,7 @@ class MainWindow(qtw.QMainWindow):
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
             self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle')],
             dataPointSlots = [self.hall_Plot.refresh_stats],
-            lineSlots = [],
+            dataSlots = [self.fitter.calculateResults],
             fieldSlots = [lambda state: self.statusBar().fieldLbl.setText('field: ' + state)],
             switchSlots = [lambda switchNumber: self.statusBar().switchLbl.setText('switch: ' + switchNumber)])
         self.hallThread.start()
@@ -177,21 +188,21 @@ class MainWindow(qtw.QMainWindow):
 
     def showResults(self,results):
         #these should be looked over carefully
-        self.fitResults1.SheetRes1Display.setText(results['sheetRes1'])
-        self.fitResults1.SheetRes2Display.setText(results['sheetRes2'])
-        self.fitResults1.Rxy1Display.setText(results['Rxy1'])
-        self.fitResults1.Rxy2Display.setText(results['Rxy2'])
-        self.fitResults1.q1Display.setText(results['q1'])
-        self.fitResults1.q2Display.setText(results['q2'])
-        self.fitResults1.FfactorDisplay.setText(results['ff'])
-        self.fitResults1.HallRatioDisplay.setText(results['hallRatio'])
-        self.fitResults2.AvgSheetResDisplay.setText(results['sheetRes'])
-        self.fitResults2.AvgTransResDisplay.setText(results['AvgTransRes'])
-        self.fitResults2.AvgResDisplay.setText(results['pBulk'])
-        self.fitResults2.SheetConcDisplay.setText(results['sheetConc'])
-        self.fitResults2.BulkConcDisplay.setText(results['bulkConc'])
-        self.fitResults2.HallCoefDisplay.setText(results['hallCoef'])
-        self.fitResults2.HallMobilityDisplay.setText(results['hallMob'])
+        self.fitResults1.SheetRes1Display.setText(f"{results['sheetRes1']:.4e}")
+        self.fitResults1.SheetRes2Display.setText(f"{results['sheetRes2']:.4e}")
+        self.fitResults1.Rxy1Display.setText(f"{results['Rxy1']:.4e}")
+        self.fitResults1.Rxy2Display.setText(f"{results['Rxy2']:.4e}")
+        self.fitResults1.q1Display.setText(f"{results['q1']:.4e}")
+        self.fitResults1.q2Display.setText(f"{results['q2']:.4e}")
+        self.fitResults1.FfactorDisplay.setText(f"{results['ff']:.4e}")
+        self.fitResults1.HallRatioDisplay.setText(f"{results['hallRatio']:.4e}")
+        self.fitResults2.AvgSheetResDisplay.setText(f"{results['sheetRes']:.4e}")
+        self.fitResults2.AvgTransResDisplay.setText(f"{results['AvgTransRes']:.4e}")
+        self.fitResults2.AvgResDisplay.setText(f"{results['pBulk']:.4e}")
+        self.fitResults2.SheetConcDisplay.setText(f"{results['sheetConc']:.4e}")
+        self.fitResults2.BulkConcDisplay.setText(f"{results['bulkConc']:.4e}")
+        self.fitResults2.HallCoefDisplay.setText(f"{results['hallCoef']:.4e}")
+        self.fitResults2.HallMobilityDisplay.setText(f"{results['hallMob']:.4e}")
 
     def IVAbort(self):
         '''stops the IV thread'''
