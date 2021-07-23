@@ -1,7 +1,6 @@
 import numpy as np
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtCore import QObject, pyqtSignal
-from miscellaneous import available_name
 from typing import List
 
 class Fitter(QObject):

@@ -1,3 +1,5 @@
+import os
+
 class Writer:
 
     temp: str = ''
@@ -25,9 +27,9 @@ class Writer:
         self.sampleID = sampleID
 
     def writeToFile(self, results: dict):
-        # dir = self.filepath[:self.filepath.rfind('/')]
-        # if not os.path.isdir(dir):
-        #     os.makedirs(dir)
+        dir = self.filepath[:self.filepath.rfind('/')]
+        if not os.path.isdir(dir):
+            os.makedirs(dir)
         filepath = self.available_name(self.filepath)
         f = open(filepath, 'a')
         f.write(f'sampleId: {self.sampleID}\n')
@@ -38,7 +40,7 @@ class Writer:
             f.write(f'{key}:  {str(results[key])}\n')
 
     #avoid overwriting data
-    def available_name(filename: str) -> str:
+    def available_name(self,filename: str) -> str:
         '''checks if the filename is available and returns the next best name'''
         exists = os.path.exists(filename)
 

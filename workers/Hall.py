@@ -2,7 +2,6 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from pyvisa import Resource
 import numpy as np
 from typing import List
-from miscellaneous import available_name
 import time
 
 class HallWorker(QObject):

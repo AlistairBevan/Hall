@@ -1,5 +1,5 @@
 from typing import List
-import os
+
 #find minimum function for finding the the minimum distance in cursors
 def find_minimum(xdata: List,ydata: List, cmpr_x: float, cmpr_y: float) -> int:
     '''returns the index of x and y value that has the lowest distance from the cmpr_x
