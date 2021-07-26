@@ -16,18 +16,15 @@ class Fitter(QObject):
             transposeLine = line.T
             x = transposeLine[0]
             y = transposeLine[1]
-            slope = np.polyfit(x,y,1)[0]
+            slope,offset = np.polyfit(x,y,1)
             mean_y = np.mean(y)
             TSS = np.sum((y - mean_y)**2)
-            RSS = np.sum((y - slope*x)**2)
+            RSS = np.sum((y - (slope*x + offset))**2)
             rSqrds.append(1 - RSS/TSS)
             slopes.append(slope)
 
         self.rSqrdSgnl.emit(rSqrds)
         return slopes
-
-    def fitfunc(f,q):
-        return (q-1)/(q+1) - f * np.arccosh(np.exp(np.log(2)/f)/2)/np.log(2)
 
     def calculateResults(self, data):
         results = {}
@@ -101,7 +98,7 @@ class Fitter(QObject):
         results['AvgTransRes'] = Rxy
 
         #pg.16?
-        rhs1 = Rxy1 * (100000000/B)
+        rhs1 = Rxy1 * (100000000/B)#converting to tesla and centimeters
         rhs2 = Rxy2 * (100000000/B)
         results['rhs1'] = rhs1
         results['rhs2'] = rhs2
