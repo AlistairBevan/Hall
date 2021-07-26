@@ -22,6 +22,8 @@ class HallWorker(QObject):
                         '6': ':clos (@1!1!4,1!2!2,1!3!3,1!4!1)',}
 
     intgrtTimeDict: dict = {'~2s': 'S1P1', '~5s': 'S0P1', '~10s': 'S0P2', '~20s': 'S2P1'}
+    rangeDict: dict = {'Enable Auto-Range': 'R0', '3mV Range': 'R1', '30mV Range': 'R2',
+        '300mV Range': 'R3', '3V Range': 'R4', '30V Range': 'R5', 'Disable Auto-Range': 'R8'}
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
         scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
@@ -38,9 +40,10 @@ class HallWorker(QObject):
         self.scanner = scanner
         self.fieldController = fieldController
         self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
-        self.rangeCtrl = rangeCtrl
+        self.rangeCtrlCmd = self.rangeDict[rangeCtrl]
         self.current = current
-        self.dwell = dwell
+        dwellCmd = f"W{dwell:.3e}X"
+        self.currentSource.write(dwellCmd)
         self.vLim = vLim
         self.dataPoints = dataPoints
         self.field = field
@@ -91,7 +94,7 @@ class HallWorker(QObject):
 
     def takeHallMeasurment(self) -> None:
         '''method for executing a measurement routine'''
-        self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
+        self.voltmeter.write(f'G0B1I0N1W0Z0{self.rangeCtrlCmd}{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
         self.powerOnField()
         self.resetDevices()
@@ -130,8 +133,8 @@ class HallWorker(QObject):
 
                 currentCmdString = f'I{current:.4e}X'
                 self.currentSource.write(currentCmdString)
-                self.voltmeter.write('X')
-                voltage = float(self.voltmeter.read_raw())
+                self.voltmeter.write('X')#takes the measurement
+                voltage = float(self.voltmeter.read_raw())#reads the measurement
                 self.dataPoint.emit([current, voltage])
                 singleLine.append([current, voltage])
             self.scanner.write(':open all')

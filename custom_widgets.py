@@ -93,7 +93,7 @@ class CurrentSourceWidget(MyGroupBox):
 
         self.dwellInput = QLineEdit('1')
         self.dwellInput.setValidator(MyDoubleValidator(0,999.9))
-        layout.addRow('Dwell Time (ms) 3ms to 999.9ms',self.dwellInput)
+        layout.addRow('Dwell Time (s) 3ms to 999.9s',self.dwellInput)
 
         self.vLimitInput = QLineEdit('10')
         self.vLimitInput.setValidator(QDoubleValidator())
