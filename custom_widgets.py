@@ -91,10 +91,6 @@ class CurrentSourceWidget(MyGroupBox):
         self.currentInput.setValidator(QDoubleValidator())
         layout.addRow('Current (A)',self.currentInput)
 
-        self.dwellInput = QLineEdit('1')
-        self.dwellInput.setValidator(MyDoubleValidator(0,999.9))
-        layout.addRow('Dwell Time (s) 3ms to 999.9s',self.dwellInput)
-
         self.vLimitInput = QLineEdit('10')
         self.vLimitInput.setValidator(QDoubleValidator())
         layout.addRow('V-Limit', self.vLimitInput)
@@ -197,7 +193,6 @@ class Inputs(QWidget):
                 'field': float(self.fieldControllerWidget.fieldInput.text()),
                 'fieldDelay': float(self.fieldControllerWidget.delayInput.text()),
                 'current': float(self.currentWidget.currentInput.text()),
-                'dwell': float(self.currentWidget.dwellInput.text()),
                 'vLim': float(self.currentWidget.vLimitInput.text()),
                 'intgrtTime': self.voltmeterWidget.integratingInput.currentText(),
                 'rangeCtrl': self.voltmeterWidget.RangeInput.currentText()}

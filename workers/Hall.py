@@ -27,7 +27,7 @@ class HallWorker(QObject):
 
     def __init__(self,voltmeter: Resource = None, currentSource: Resource = None,
         scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
-        rangeCtrl: str = '', current: float = 0, dwell: float = 0, vLim: float = 0,
+        rangeCtrl: str = '', current: float = 0, vLim: float = 0,
         dataPoints: int = 1, field: int = 0, fieldDelay: float = 0, thickness: float = 0) -> None:
         '''Constructor for the class; stores the relevant information for the thread
         to use since arguments cannot be passed when using moveToThread (might be
@@ -42,8 +42,6 @@ class HallWorker(QObject):
         self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
         self.rangeCtrlCmd = self.rangeDict[rangeCtrl]
         self.current = current
-        dwellCmd = f"W{dwell:.3e}X"
-        self.currentSource.write(dwellCmd)
         self.vLim = vLim
         self.dataPoints = dataPoints
         self.field = field
@@ -133,6 +131,7 @@ class HallWorker(QObject):
 
                 currentCmdString = f'I{current:.4e}X'
                 self.currentSource.write(currentCmdString)
+                time.sleep(0.2)
                 self.voltmeter.write('X')#takes the measurement
                 voltage = float(self.voltmeter.read_raw())#reads the measurement
                 self.dataPoint.emit([current, voltage])

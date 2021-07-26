@@ -152,7 +152,7 @@ class MainWindow(qtw.QMainWindow):
         self.hallThread = qtc.QThread()
         self.hallWorker = HallWorker(voltmeter = self.voltmeter, currentSource = self.currentSource,
                             scanner = self.scanner, fieldController = self.fieldController,
-                            current = current, dwell = inputs['dwell'], vLim = inputs['vLim'],
+                            current = current, vLim = inputs['vLim'],
                             dataPoints = inputs['dataPoints'], field = inputs['field'],
                             fieldDelay = inputs['fieldDelay'], intgrtTime = inputs['intgrtTime'],
                             rangeCtrl = inputs['rangeCtrl'], thickness = inputs['thickness'])
