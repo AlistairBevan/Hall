@@ -120,6 +120,7 @@ class MainWindow(qtw.QMainWindow):
         self.fitter.resultSgnl.connect(self.showResults)#displays the results
         self.fitter.rSqrdSgnl.connect(self.showRSqrd)#displays the rsqrd on the UI
         self.fitter.rSqrdSgnl.connect(self.writer.setRSqrd)#gives the righter the r squared values when done
+        self.fitter.IVLineSgnl.connect(lambda slope: self.IVColumn1.resistanceDisplay.setText(f"{slope:.4e}"))
 
         self.hallInputs.sampleInfoWidget.sampleIDInput.textChanged.connect(self.writer.setSampleID)
         self.hallInputs.sampleInfoWidget.tempInput.textEdited.connect(self.writer.setTemp)
@@ -163,6 +164,7 @@ class MainWindow(qtw.QMainWindow):
         self.hallWorker.moveToThread(self.hallThread)
         self.hallThread.started.connect(self.hallWorker.takeHallMeasurment)
         self.hallThread.finished.connect(self.hallThread.deleteLater)
+        self.hallThread.finished.connect(self.repeatHall)
         self.hallWorker.connectSignals(finishedSlots = [self.hallThread.quit,
             self.hallWorker.deleteLater,self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle')],
             dataPointSlots = [self.hall_Plot.refresh_stats],
@@ -170,6 +172,11 @@ class MainWindow(qtw.QMainWindow):
             fieldSlots = [lambda state: self.statusBar().fieldLbl.setText('field: ' + state)],
             switchSlots = [lambda switchNumber: self.statusBar().switchLbl.setText('switch: ' + switchNumber)])
         self.hallThread.start()
+
+    def repeatHall(self):
+        '''repeats the hallGo if repeat is checked'''
+        if self.hallInputs.repeatBtn.isChecked():
+            self.hallGo()
 
     def hallAbort(self):
         '''stops the hall thread'''
@@ -193,10 +200,15 @@ class MainWindow(qtw.QMainWindow):
         self.IVWorker.connectSignals(finishedSlots = [self.IVThread.quit,self.IVWorker.deleteLater,
             self.enableGo, lambda: self.statusBar().stateLbl.setText('state: Idle'),
             lambda: self.statusBar().switchLbl.setText('switch: n/a')],
-            dataPointSlots = [self.IV_Plot.refresh_stats])
+            dataPointSlots = [self.IV_Plot.refresh_stats],
+            lineSlots = [lambda line: self.fitter.IVfit(np.array(line))])
 
         self.statusBar().switchLbl.setText('switch: ' + self.IVColumn1.switches.currentText())
         self.IVThread.start()
+
+    def IVAbort(self):
+        '''stops the IV thread'''
+        self.IVWorker.abort = True
 
     def showRSqrd(self, rSqrds):
         self.belowGraph.box1.setText(f"{rSqrds[0]:.6f}")
@@ -227,9 +239,7 @@ class MainWindow(qtw.QMainWindow):
         self.fitResults2.HallCoefDisplay.setText(f"{results['hallCoef']:.4e}")
         self.fitResults2.HallMobilityDisplay.setText(f"{results['hallMob']:.4e}")
 
-    def IVAbort(self):
-        '''stops the IV thread'''
-        self.IVWorker.abort = True
+
 
 if __name__ == '__main__':
     app = qtw.QApplication(sys.argv)

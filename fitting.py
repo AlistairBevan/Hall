@@ -7,8 +7,9 @@ class Fitter(QObject):
 
     resultSgnl= pyqtSignal(dict)
     rSqrdSgnl = pyqtSignal(list)
+    IVLineSgnl = pyqtSignal(float)
 
-    def fit(self,lines):
+    def fit(self,lines: np.array):
         slopes = []
         rSqrds = []
 
@@ -25,6 +26,14 @@ class Fitter(QObject):
 
         self.rSqrdSgnl.emit(rSqrds)
         return slopes
+
+    def IVfit(self, line: np.array):
+        transposeLine = line.T
+        x = transposeLine[0]
+        y = transposeLine[1]
+        slope,offset = np.polyfit(x,y,1)
+        self.IVLineSgnl.emit(slope)
+
 
     def calculateResults(self, data):
         results = {}

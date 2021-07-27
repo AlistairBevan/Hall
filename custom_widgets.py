@@ -182,8 +182,15 @@ class Inputs(QWidget):
         spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
                                 vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
+        subLayout = QHBoxLayout()
         self.backupBtn = ColoredButton('Backup Data')
-        layout.addWidget(self.backupBtn)
+        subLayout.addWidget(self.backupBtn)
+
+        self.repeatBtn = ColoredButton('repeat')
+        self.repeatBtn.setCheckable(True)
+        subLayout.addWidget(self.repeatBtn)
+
+        layout.addLayout(subLayout)
         self.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Expanding)
         self.setLayout(layout)
 
@@ -431,6 +438,7 @@ class IVColumn1(QWidget):
         self.resistanceLbl = QLabel('Resistance (ohms)')
         layout.addWidget(self.resistanceLbl)
         self.resistanceDisplay = QLineEdit('0')
+        self.resistanceDisplay.setReadOnly(True)
         layout.addWidget(self.resistanceDisplay)
 
         self.switchLbl = QLabel('Switch Number')
