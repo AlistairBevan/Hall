@@ -12,6 +12,7 @@ from PyQt5 import QtCore as qtc
 from datetime import datetime
 from graphing import View
 from fitting import Fitter
+from subprocess import call
 from FileWriting import Writer
 
 class MainWindow(qtw.QMainWindow):
@@ -106,6 +107,8 @@ class MainWindow(qtw.QMainWindow):
             self.statusBar().stateLbl.setText('state: Running'))
 
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
+
+        self.hallInputs.backupBtn.clicked.connect(lambda: call([r'C:\Users\lw5968\Documents\Hall_backup.bat']))
 
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
         self.IVColumn1.goBtn.clicked.connect(lambda:

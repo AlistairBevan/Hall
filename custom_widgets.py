@@ -177,10 +177,13 @@ class Inputs(QWidget):
         self.abortBtn.setEnabled(False)
         self.abortBtn.setMinimumSize(400,55)
         layout.addWidget(self.abortBtn)
+
         #add a spacer on the bottom
         spacer = QSpacerItem(100,100, hPolicy = QSizePolicy.Preferred,
                                 vPolicy = QSizePolicy.Expanding)
         layout.addItem(spacer)
+        self.backupBtn = ColoredButton('Backup Data')
+        layout.addWidget(self.backupBtn)
         self.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Expanding)
         self.setLayout(layout)
 
