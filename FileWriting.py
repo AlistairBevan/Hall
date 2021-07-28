@@ -3,6 +3,8 @@ import json
 from datetime import datetime
 
 class Writer:
+    '''class for writing the results to a file, its setter functions are
+    connected to the inputs in the GUI so they will update in real time'''
     temp: str = ''
     sampleID: str = ''
     thickness: str = ''

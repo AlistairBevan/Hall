@@ -235,7 +235,7 @@ class View(QGraphicsView):
             self.scene().removeItem(self.m_callouts.pop())
 
     #adds a point and scales the axis if necessary
-    def refresh_stats(self,data):
+    def refresh_stats(self,data: list):
         '''add data point'''
         #keep track of the data for cursor
         xdata = data[0]
@@ -254,7 +254,7 @@ class View(QGraphicsView):
         #add the data
         self.series.append(xdata,ydata)
 
-    def set_xlim(self,min,max):
+    def set_xlim(self,min: float, max: float):
         '''set the x range'''
         self.x_axis.setRange(min, max)
         self.rangeX = max - min

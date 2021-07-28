@@ -4,12 +4,13 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from typing import List
 
 class Fitter(QObject):
-
+    '''class for fitting our results'''
     resultSgnl= pyqtSignal(dict)
     rSqrdSgnl = pyqtSignal(list)
     IVLineSgnl = pyqtSignal(float)
 
     def fit(self,lines: np.array):
+        '''fit the 8 lines returned from the measurements'''
         slopes = []
         rSqrds = []
 
@@ -28,6 +29,7 @@ class Fitter(QObject):
         return slopes
 
     def IVfit(self, line: np.array):
+        '''fit a single line returned from the IV test'''
         transposeLine = line.T
         x = transposeLine[0]
         y = transposeLine[1]
@@ -35,7 +37,9 @@ class Fitter(QObject):
         self.IVLineSgnl.emit(slope)
 
 
-    def calculateResults(self, data):
+    def calculateResults(self, data: dict):
+        '''get the results from the data returned by the measurement, this is not just
+        the voltage and current values but also the thickness, field, and current'''
         results = {}
         #convert thickness
         thickness = data['thickness'] * 0.0001

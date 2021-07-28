@@ -193,6 +193,7 @@ class MainWindow(qtw.QMainWindow):
         self.IVWorker = IVWorker(voltmeter = self.voltmeter,
                                  scanner = self.scanner,
                                  currentSource = self.currentSource,)
+        #unpacks the inputs into keyword arguments (only works if all the inputs are used by the function)
         self.IVWorker.setInputs(**inputs)
         self.IVWorker.moveToThread(self.IVThread)
         self.IVThread.started.connect(self.IVWorker.takeIVMeasurement)
@@ -211,6 +212,7 @@ class MainWindow(qtw.QMainWindow):
         self.IVWorker.abort = True
 
     def showRSqrd(self, rSqrds):
+        '''display the rSqrds in the boxes below the graph'''
         self.belowGraph.box1.setText(f"{rSqrds[0]:.6f}")
         self.belowGraph.box2.setText(f"{rSqrds[1]:.6f}")
         self.belowGraph.box3.setText(f"{rSqrds[2]:.6f}")
@@ -222,6 +224,7 @@ class MainWindow(qtw.QMainWindow):
 
 
     def showResults(self,results):
+        '''display the results of the fit to the GUI'''
         #these should be looked over carefully
         self.fitResults1.SheetRes1Display.setText(f"{results['sheetRes1']:.4e}")
         self.fitResults1.SheetRes2Display.setText(f"{results['sheetRes2']:.4e}")
