@@ -69,6 +69,7 @@ class IVWorker(QObject):
 
             currentCmdString = f'I{current:.4e}X'
             self.currentSource.write(currentCmdString)
+            time.sleep(0.2)
             self.voltmeter.write('X')
             voltage = float(self.voltmeter.read_raw())
             self.dataPoint.emit([current, voltage])
@@ -81,4 +82,8 @@ class IVWorker(QObject):
 
     def clearDevices(self) -> None:
         self.currentSource.write('K0X')
+        self.currentSource.clear()
+        self.scanner.clear()
+        self.voltmeter.clear()
         self.scanner.write(':open all')
+        self.currentSource.write('I0.000E+0X')

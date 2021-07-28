@@ -92,10 +92,11 @@ class HallWorker(QObject):
 
     def takeHallMeasurment(self) -> None:
         '''method for executing a measurement routine'''
+        self.resetDevices()
         self.voltmeter.write(f'G0B1I0N1W0Z0{self.rangeCtrlCmd}{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
         self.powerOnField()
-        self.resetDevices()
+
         data = {}
         lines = []
 
@@ -156,8 +157,12 @@ class HallWorker(QObject):
 
     def resetDevices(self):
         self.currentSource.write('K0X')
+        self.currentSource.clear()
         self.currentSource.write('I0.000E+0X')
         self.scanner.write(':open all')
         self.switchSgnl.emit('n/a')
+        self.scanner.clear()
         self.fieldController.write('CF0')
         self.fieldState.emit('Off')
+        self.fieldController.clear()
+        self.voltmeter.clear()
