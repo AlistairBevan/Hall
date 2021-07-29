@@ -17,8 +17,8 @@ class MyDoubleValidator(QDoubleValidator):
     (needed some tweaking)
     '''
 
-    def __init__(self, bottom: float = float_info.min, \
-                 top:float = float_info.max, \
+    def __init__(self, bottom: float = float_info.min,
+                 top:float = float_info.max,
                  decimals:int  = float_info.dig, parent: QWidget = None):
 
         super().__init__(bottom, top, decimals, parent)
