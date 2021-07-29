@@ -1,4 +1,3 @@
-import sys
 from typing import List
 from miscellaneous import find_minimum
 import numpy as np

@@ -1,15 +1,13 @@
 import sys
 import pyvisa
-import time
 import numpy as np
 from custom_widgets import (Inputs,FitResults1, FitResults2, BelowGraphWidget,
-                            ColoredButton,IVColumn1,status)
+                            IVColumn1,status)
 from workers.IV import IVWorker
 from workers.Hall import HallWorker
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
-from datetime import datetime
 from graphing import View
 from fitting import Fitter
 from subprocess import call
