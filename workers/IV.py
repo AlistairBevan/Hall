@@ -63,7 +63,7 @@ class IVWorker(QObject):
         for current in self.currentValues:
 
             if self.abort:
-                self.currentSource.write('I0.000E+0X')
+                self.clearDevices()
                 self.finished.emit()
                 return
 
@@ -76,7 +76,6 @@ class IVWorker(QObject):
             line.append([current, voltage])
 
         self.lineSgnl.emit(line)
-        self.currentSource.write('I0.000E+0X')
         self.clearDevices()
         self.finished.emit()
 

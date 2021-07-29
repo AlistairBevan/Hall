@@ -145,7 +145,6 @@ class HallWorker(QObject):
         #when were done we need to reverse the field back again
         self.reverseField()
         self.resetDevices()
-        time.sleep(2*self.fieldDelay)
         data['lines'] = lines
         data['field'] = self.field
         data['current'] = self.current
