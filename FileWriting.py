@@ -53,7 +53,7 @@ class Writer:
                     B = 5000
                 if i == 7:
                     B = -5000
-                outfile.write(f"{str(i)}\t{-B}\t{self.rSqrd[i - 1]}\n")
+                outfile.write(f"{str(i)}\t{-B}\t{results['sw'+str(i)+' R']:.5e}\t{self.rSqrd[i - 1]}\n")
 
             outfile.write('\n\n\n')
             outfile.write(f"Sheet Res1:\t\t{results['sheetRes1']} ohm\n")
@@ -93,7 +93,7 @@ class Writer:
                 if depth == 0:
                     filename = filename[:dot] + '(' + str(depth + 1) + ')' + filename[dot:] #add the brackets and number before the dot
                 else:
-                    filename = filename[:dot - 2] + str(depth + 1) + filename[dot - 1:]#replace the number
+                    filename = filename[:filename.rfind('(')+1] + str(depth + 1) + filename[filename.rfind(')'):]#replace the number
 
             exists = os.path.exists(filename)
             depth += 1
