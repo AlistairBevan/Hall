@@ -53,25 +53,25 @@ class Writer:
                     B = 5000
                 if i == 7:
                     B = -5000
-                outfile.write(f"{str(i)}\t{-B}\t{results['sw'+str(i)+' R']:.5e}\t{self.rSqrd[i - 1]}\n")
+                outfile.write(f"{str(i)}\t{-B}\t{results['sw'+str(i)+' R']:.5e}\t{self.rSqrd[i - 1]:.5f}\n")
 
             outfile.write('\n\n\n')
-            outfile.write(f"Sheet Res1:\t\t{results['sheetRes1']} ohm\n")
-            outfile.write(f"Sheet Res2:\t\t{results['sheetRes2']} ohm\n")
-            outfile.write(f"Rxy1:\t\t{results['Rxy1']} ohm\n")
-            outfile.write(f"Rxy2:\t\t{results['Rxy2']} ohm\n")
-            outfile.write(f"q1:\t\t{results['q1']}\n")
-            outfile.write(f"q2:\t\t{results['q2']}\n")
-            outfile.write(f"Hall Ratio:\t\t{results['hallRatio']}\n")
-            outfile.write(f"Ffactor:\t\t{results['ff']}\n")
+            outfile.write(f"Sheet Res1:\t\t{results['sheetRes1']:.5e} ohm\n")
+            outfile.write(f"Sheet Res2:\t\t{results['sheetRes2']:.5e} ohm\n")
+            outfile.write(f"Rxy1:\t\t{results['Rxy1']:.5e} ohm\n")
+            outfile.write(f"Rxy2:\t\t{results['Rxy2']:.5e} ohm\n")
+            outfile.write(f"q1:\t\t{results['q1']:.4f}\n")
+            outfile.write(f"q2:\t\t{results['q2']:.4f}\n")
+            outfile.write(f"Hall Ratio:\t\t{results['hallRatio']:.5e}\n")
+            outfile.write(f"Ffactor:\t\t{results['ff']:.4f}\n")
             outfile.write('\n\n\n')
-            outfile.write(f"Ave Trans Res:\t{results['AvgTransRes']}\tohm\n")
-            outfile.write(f"Ave Sheet Res:\t{results['sheetRes']}\tohm\n")
-            outfile.write(f"Ave Res:\t{results['pBulk']}\tohm-cm\n")
-            outfile.write(f"Sheet Conc:\t{results['sheetConc']}\tcm-2\n")
-            outfile.write(f"Bulk Conc:\t{results['bulkConc']}\tcm-3\n")
-            outfile.write(f"Hall Coef:\t{results['hallCoef']}\tcm3 / C\n")
-            outfile.write(f"Hall Mobility:\t{results['hallMob']}\tcm2")
+            outfile.write(f"Ave Trans Res:\t{results['AvgTransRes']:.5e}\tohm\n")
+            outfile.write(f"Ave Sheet Res:\t{results['sheetRes']:.5e}\tohm\n")
+            outfile.write(f"Ave Res:\t{results['pBulk']:.5e}\tohm-cm\n")
+            outfile.write(f"Sheet Conc:\t{results['sheetConc']:.5e}\tcm-2\n")
+            outfile.write(f"Bulk Conc:\t{results['bulkConc']:.5e}\tcm-3\n")
+            outfile.write(f"Hall Coef:\t{results['hallCoef']:.5e}\tcm3 / C\n")
+            outfile.write(f"Hall Mobility:\t{results['hallMob']:.5e}\tcm2")
 
     #avoid overwriting data
     def available_name(self,filename: str) -> str:
