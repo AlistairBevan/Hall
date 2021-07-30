@@ -10,12 +10,12 @@ from sys import float_info, maxsize
 
 class MyDoubleValidator(QDoubleValidator):
 
-    '''
+    """
     Fix for strange behavior of default QDoubleValidator used in
     CurrentSourceWidget
     http://learnwithhelvin.blogspot.com/2010/01/qdoublevalidator.html
     (needed some tweaking)
-    '''
+    """
 
     def __init__(self, bottom: float = float_info.min,
                  top:float = float_info.max,
@@ -36,8 +36,8 @@ class MyDoubleValidator(QDoubleValidator):
 
 
 class ColoredButton(QPushButton):
-    '''the default button to be used in the program
-    (makes it easy to change the color of all buttons and so on)'''
+    """the default button to be used in the program
+    (makes it easy to change the color of all buttons and so on)"""
     def __init__(self, *args, rgb: tuple = (64, 137, 255), **kwargs):
         super().__init__(*args, **kwargs)
         color = 'rgb' + str(rgb)
@@ -50,8 +50,8 @@ class ColoredButton(QPushButton):
         }""")
 
 class MyGroupBox(QGroupBox):
-    '''custom groupbox to make the border darker and make
-    further style sheet changes easier'''
+    """custom groupbox to make the border darker and make
+    further style sheet changes easier"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setStyleSheet("""QGroupBox {
@@ -66,7 +66,7 @@ class MyGroupBox(QGroupBox):
         }""")
 
 class FieldControllerWidget(MyGroupBox):
-    '''Widget for displaying the fieldController controls'''
+    """Widget for displaying the fieldController controls"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
@@ -82,7 +82,7 @@ class FieldControllerWidget(MyGroupBox):
         self.setLayout(layout)
 
 class CurrentSourceWidget(MyGroupBox):
-    '''Widget for displaying the current controls'''
+    """Widget for displaying the current controls"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
@@ -99,7 +99,7 @@ class CurrentSourceWidget(MyGroupBox):
         self.setLayout(layout)
 
 class VoltmeterWidget(MyGroupBox):
-    '''Widget for displaying the voltmeter controls'''
+    """Widget for displaying the voltmeter controls"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
@@ -126,7 +126,7 @@ class VoltmeterWidget(MyGroupBox):
         self.setLayout(layout)
 
 class SampleInfoWidget(MyGroupBox):
-    '''Widget for sample inforamtion inputs'''
+    """Widget for sample inforamtion inputs"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         layout = QFormLayout()
@@ -152,7 +152,7 @@ class SampleInfoWidget(MyGroupBox):
         self.setLayout(layout)
 
 class Inputs(QWidget):
-    '''column1 of the Hall tab'''
+    """column1 of the Hall tab"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         #make the first column
@@ -195,7 +195,7 @@ class Inputs(QWidget):
         self.setLayout(layout)
 
     def textDict(self) -> dict:
-        '''return a dictionary of the displayed text'''
+        """return a dictionary of the displayed text"""
         dict = {'temp': self.sampleInfoWidget.tempInput.text(),
                 'sampleID': self.sampleInfoWidget.sampleIDInput.text(),
                 'thickness': float(self.sampleInfoWidget.thicknessInput.text()),
@@ -210,7 +210,7 @@ class Inputs(QWidget):
 
 
 class FitResults1(QFrame):
-    '''widget to display the results, located on the right side'''
+    """widget to display the results, located on the right side"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         self.setFrameShape(QFrame.Box)
@@ -285,7 +285,7 @@ class FitResults1(QFrame):
 
 
 class FitResults2(QFrame):
-    '''widget to display the results, located on the right side'''
+    """widget to display the results, located on the right side"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args, **kwargs)
         self.setFrameShape(QFrame.Box)
@@ -352,7 +352,7 @@ class FitResults2(QFrame):
 
 
 class BelowGraphWidget(QWidget):
-    '''widget placed below the graph'''
+    """widget placed below the graph"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
@@ -401,7 +401,7 @@ class BelowGraphWidget(QWidget):
         self.setLayout(layout)
 
     def textDict(self) -> dict:
-        '''returns a dictionary of all the text in this widget for ease of access later'''
+        """returns a dictionary of all the text in this widget for ease of access later"""
         dict = {'box1': self.box1.text(), 'box2': self.box2.text(),
                 'box3': self.box3.text(), 'box4': self.box4.text(),
                 'box5': self.box5.text(), 'box6': self.box6.text(),
@@ -471,7 +471,7 @@ class IVColumn1(QWidget):
         return dict
 
 class status(QStatusBar):
-    '''status bar at the bottom of the application to display useful information'''
+    """status bar at the bottom of the application to display useful information"""
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.setStyleSheet('QStatusBar::item {border: None;}')

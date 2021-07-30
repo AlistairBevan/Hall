@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 
 class Writer:
-    '''class for writing the results to a file, its setter functions are
-    connected to the inputs in the GUI so they will update in real time'''
+    """class for writing the results to a file, its setter functions are
+    connected to the inputs in the GUI so they will update in real time"""
     temp: str = ''
     sampleID: str = ''
     thickness: str = ''
@@ -33,7 +33,7 @@ class Writer:
         self.rSqrd = rSqrd
 
     def writeToFile(self, results: dict):
-        '''writes the results to a file connected to the result signal of the fitter'''
+        """writes the results to a file connected to the result signal of the fitter"""
         dir = os.path.dirname(self.filepath)
         if not os.path.isdir(dir) and dir != '':
             os.makedirs(dir)
@@ -75,7 +75,7 @@ class Writer:
 
     #avoid overwriting data
     def available_name(self,filename: str) -> str:
-        '''checks if the filename is available and returns the next best name'''
+        """checks if the filename is available and returns the next best name"""
         exists = os.path.exists(filename)
 
         depth =  0

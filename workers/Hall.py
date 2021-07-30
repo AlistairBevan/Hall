@@ -5,9 +5,9 @@ from typing import List
 import time
 
 class HallWorker(QObject):
-    '''worker for taking a measurement the takeHallMeasurement method of this
+    """worker for taking a measurement the takeHallMeasurement method of this
     class will be executed by a seperate thread in order to keep the UI
-    responsive'''
+    responsive"""
     finished = pyqtSignal()
     dataPoint = pyqtSignal(list)
     lineData = pyqtSignal(dict)
@@ -29,9 +29,9 @@ class HallWorker(QObject):
         scanner: Resource = None, fieldController: Resource = None, intgrtTime: str = '~5s',
         rangeCtrl: str = '', current: float = 0, vLim: float = 0,
         dataPoints: int = 1, field: int = 0, fieldDelay: float = 0, thickness: float = 0) -> None:
-        '''Constructor for the class; stores the relevant information for the thread
+        """Constructor for the class; stores the relevant information for the thread
         to use since arguments cannot be passed when using moveToThread (might be
-        possible with lambda but I think this way is better)'''
+        possible with lambda but I think this way is better)"""
         super().__init__()
         self.voltmeter = voltmeter
         self.currentSource = currentSource
@@ -52,8 +52,8 @@ class HallWorker(QObject):
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
               dataSlots: List = [], fieldSlots: List = [], switchSlots: List = []) -> None:
-        '''connect all the signals and slots, takes lists of the slots desired to be
-        connected, one list for each different signal this class has'''
+        """connect all the signals and slots, takes lists of the slots desired to be
+        connected, one list for each different signal this class has"""
         #connect the signals to desired slots
         for finishedSlot in finishedSlots:
             self.finished.connect(finishedSlot)
@@ -71,7 +71,7 @@ class HallWorker(QObject):
             self.switchSgnl.connect(switchSlot)
 
     def powerOnField(self) -> None:
-        '''starts up the field Controller (copied from labview)'''
+        """starts up the field Controller (copied from labview)"""
         self.fieldController.write('MO0')
         self.fieldController.write('SO1')
         time.sleep(0.2)
@@ -79,7 +79,7 @@ class HallWorker(QObject):
         self.fieldController.write('CF0')
 
     def reverseField(self) -> None:
-        '''reverses the field direction'''
+        """reverses the field direction"""
         self.fieldController.write(f'CF0')
         time.sleep(self.fieldDelay)
         #reverse the field
@@ -91,7 +91,7 @@ class HallWorker(QObject):
 
 
     def takeHallMeasurment(self) -> None:
-        '''method for executing a measurement routine'''
+        """method for executing a measurement routine"""
         self.resetDevices()
         self.voltmeter.write(f'G0B1I0N1W0Z0{self.rangeCtrlCmd}{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')

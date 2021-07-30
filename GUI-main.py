@@ -16,7 +16,7 @@ from FileWriting import Writer
 class MainWindow(qtw.QMainWindow):
 
     def __init__(self):
-        '''MainWindow Constructor'''
+        """MainWindow Constructor"""
         super().__init__()
         self.makeUI()
         self.fitter = Fitter()
@@ -29,7 +29,7 @@ class MainWindow(qtw.QMainWindow):
         self.show()
 
     def setupInstruments(self):
-        '''sets up the instruments for use'''
+        """sets up the instruments for use"""
         rm = pyvisa.ResourceManager()
         self.voltmeter = rm.open_resource('GPIB0::2::INSTR')
         #in ms change the timeout time to be longer for the longer integrating times
@@ -40,7 +40,7 @@ class MainWindow(qtw.QMainWindow):
 
 
     def makeUI(self):
-        '''Constructs the visual components of the UI'''
+        """Constructs the visual components of the UI"""
         self.setWindowTitle('Hall GUI')
 
         cw = qtw.QTabWidget()#central widget (the outermost widget)
@@ -98,8 +98,8 @@ class MainWindow(qtw.QMainWindow):
         self.resize(800,600)
 
     def connectSignals(self):
-        '''Connects the buttons to the proper logic as well as other functions
-        essentially chaining things together'''
+        """Connects the buttons to the proper logic as well as other functions
+        essentially chaining things together"""
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
         self.hallInputs.goBtn.clicked.connect(lambda:
             self.statusBar().stateLbl.setText('state: Running'))
@@ -128,21 +128,21 @@ class MainWindow(qtw.QMainWindow):
 
     #enabling and disabling the proper buttons to prevent crashing
     def disableGo(self):
-        '''disables the go buttons and enables the abort buttons'''
+        """disables the go buttons and enables the abort buttons"""
         self.IVColumn1.goBtn.setEnabled(False)
         self.hallInputs.goBtn.setEnabled(False)
         self.IVColumn1.abortBtn.setEnabled(True)
         self.hallInputs.abortBtn.setEnabled(True)
 
     def enableGo(self):
-        '''enables the go buttons and disables the abort buttons'''
+        """enables the go buttons and disables the abort buttons"""
         self.IVColumn1.goBtn.setEnabled(True)
         self.hallInputs.goBtn.setEnabled(True)
         self.IVColumn1.abortBtn.setEnabled(False)
         self.hallInputs.abortBtn.setEnabled(False)
 
     def hallGo(self):
-        '''run when you press go, sets up thread and starts it'''
+        """run when you press go, sets up thread and starts it"""
         self.disableGo()
         #collect the inputs as a dictionary from the input widget
         inputs = self.hallInputs.textDict()
@@ -172,16 +172,16 @@ class MainWindow(qtw.QMainWindow):
         self.hallThread.start()
 
     def repeatHall(self):
-        '''repeats the hallGo if repeat is checked'''
+        """repeats the hallGo if repeat is checked"""
         if self.hallInputs.repeatBtn.isChecked():
             self.hallGo()
 
     def hallAbort(self):
-        '''stops the hall thread'''
+        """stops the hall thread"""
         self.hallWorker.abort = True
 
     def IVGo(self):
-        '''run when you press go, sets up thread and starts it'''
+        """run when you press go, sets up thread and starts it"""
         self.disableGo()
         inputs = self.IVColumn1.textDict()
         current = float(inputs['current'])
@@ -206,11 +206,11 @@ class MainWindow(qtw.QMainWindow):
         self.IVThread.start()
 
     def IVAbort(self):
-        '''stops the IV thread'''
+        """stops the IV thread"""
         self.IVWorker.abort = True
 
     def showRSqrd(self, rSqrds):
-        '''display the rSqrds in the boxes below the graph'''
+        """display the rSqrds in the boxes below the graph"""
         self.belowGraph.box1.setText(f"{rSqrds[0]:.6f}")
         self.belowGraph.box2.setText(f"{rSqrds[1]:.6f}")
         self.belowGraph.box3.setText(f"{rSqrds[2]:.6f}")
@@ -222,7 +222,7 @@ class MainWindow(qtw.QMainWindow):
 
 
     def showResults(self,results):
-        '''display the results of the fit to the GUI'''
+        """display the results of the fit to the GUI"""
         #these should be looked over carefully
         self.fitResults1.SheetRes1Display.setText(f"{results['sheetRes1']:.4e}")
         self.fitResults1.SheetRes2Display.setText(f"{results['sheetRes2']:.4e}")

@@ -5,7 +5,7 @@ from typing import List
 import time
 
 class IVWorker(QObject):
-
+    """the worker object that does the IV measurement"""
     finished = pyqtSignal()
     dataPoint = pyqtSignal(list)
     lineSgnl = pyqtSignal(list)
@@ -30,7 +30,7 @@ class IVWorker(QObject):
 
     def setInputs(self, switchNumber: str = '', intgrtTime: str = '~5s', current: float = 0,
                     voltLim: float = 10) -> None:
-        '''sets the user inputs to the correct values'''
+        """sets the user inputs to the correct values"""
         self.currentValues = np.linspace(-current, current, 11)
         self.switchCmd = self.switchDict[switchNumber]
         self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
@@ -39,8 +39,8 @@ class IVWorker(QObject):
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
         lineSlots: List = []) -> None:
-        '''connect all the signals and slots, takes lists of the slots desired to be
-        connected, one list for each different signal this class has'''
+        """connect all the signals and slots, takes lists of the slots desired to be
+        connected, one list for each different signal this class has"""
         #connect the signals to desired slots
         for finishedSlot in finishedSlots:
             self.finished.connect(finishedSlot)
@@ -52,8 +52,8 @@ class IVWorker(QObject):
             self.lineSgnl.connect(lineSlot)
 
     def takeIVMeasurement(self) -> None:
-        '''takes 11 evenly spaced current and voltage measurements across the
-        -current to current range and plots them on the IV_Plot'''
+        """takes 11 evenly spaced current and voltage measurements across the
+        -current to current range and plots them on the IV_Plot"""
         self.clearDevices()
         #configuring the voltmeter based on the labview
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
