@@ -195,7 +195,7 @@ class Inputs(QWidget):
         self.setLayout(layout)
 
     def textDict(self) -> dict:
-        """return a dictionary of the displayed text"""
+        """return a dictionary of the inputs"""
         dict = {'temp': self.sampleInfoWidget.tempInput.text(),
                 'sampleID': self.sampleInfoWidget.sampleIDInput.text(),
                 'thickness': float(self.sampleInfoWidget.thicknessInput.text()),

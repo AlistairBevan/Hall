@@ -75,7 +75,7 @@ class Writer:
 
     #avoid overwriting data
     def available_name(self,filename: str) -> str:
-        """checks if the filename is available and returns the next best name"""
+        """checks if the filename is available and returns the next best name if its not"""
         exists = os.path.exists(filename)
 
         depth =  0

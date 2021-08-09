@@ -171,7 +171,7 @@ class MainWindow(qtw.QMainWindow):
             switchSlots = [lambda switchNumber: self.statusBar().switchLbl.setText('switch: ' + switchNumber)])
         self.hallThread.start()
 
-    def repeatHall(self):
+    def repeatHall(self):#connected to finished singal of hallThread
         """repeats the hallGo if repeat is checked"""
         if self.hallInputs.repeatBtn.isChecked():
             self.hallGo()
