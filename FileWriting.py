@@ -37,8 +37,8 @@ class Writer:
         dir = os.path.dirname(self.filepath)
         if not os.path.isdir(dir) and dir != '':
             os.makedirs(dir)
-        self.filepath = self.available_name(self.filepath)
-        with open(self.filepath, 'w') as outfile:
+        filepath = self.available_name(self.filepath)
+        with open(filepath, 'w') as outfile:
             outfile.write(f"Sample ID:\t\t{self.sampleID}\n\n")
             dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             outfile.write(f"Date Time:\t\t{dt_string}\n\n")

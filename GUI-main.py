@@ -12,6 +12,7 @@ from graphing import View
 from fitting import Fitter
 from subprocess import call
 from FileWriting import Writer
+import time
 
 class MainWindow(qtw.QMainWindow):
 
@@ -37,6 +38,15 @@ class MainWindow(qtw.QMainWindow):
         self.scanner = rm.open_resource('GPIB0::7::INSTR')
         self.currentSource = rm.open_resource('GPIB0::12::INSTR')
         self.fieldController = rm.open_resource('GPIB0::3::INSTR')
+        self.powerOnField()
+
+    def powerOnField(self) -> None:
+        """starts up the field Controller (copied from labview)"""
+        self.fieldController.write('SO1')
+        time.sleep(0.2)
+        self.fieldController.write('SO0')
+        time.sleep(0.1)
+        self.fieldController.write('CF0')
 
 
     def makeUI(self):
@@ -109,8 +119,7 @@ class MainWindow(qtw.QMainWindow):
         self.hallInputs.backupBtn.clicked.connect(lambda: call([r'C:\Users\lw5968\Documents\Hall_backup.bat']))
 
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
-        self.IVColumn1.goBtn.clicked.connect(lambda:
-            self.statusBar().stateLbl.setText('state: Running'))
+        self.IVColumn1.goBtn.clicked.connect(lambda:self.statusBar().stateLbl.setText('state: Running'))
 
         self.IVColumn1.abortBtn.clicked.connect(self.IVAbort)
 
@@ -174,7 +183,7 @@ class MainWindow(qtw.QMainWindow):
     def repeatHall(self):#connected to finished singal of hallThread
         """repeats the hallGo if repeat is checked"""
         if self.hallInputs.repeatBtn.isChecked():
-            self.hallGo()
+            self.IVColumn1.goBtn.click()
 
     def hallAbort(self):
         """stops the hall thread"""

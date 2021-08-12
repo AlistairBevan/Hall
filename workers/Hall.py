@@ -70,14 +70,6 @@ class HallWorker(QObject):
         for switchSlot in switchSlots:
             self.switchSgnl.connect(switchSlot)
 
-    def powerOnField(self) -> None:
-        """starts up the field Controller (copied from labview)"""
-        self.fieldController.write('MO0')
-        self.fieldController.write('SO1')
-        time.sleep(0.2)
-        self.fieldController.write('SO0')
-        self.fieldController.write('CF0')
-
     def reverseField(self) -> None:
         """reverses the field direction"""
         self.fieldController.write(f'CF0')
@@ -95,7 +87,7 @@ class HallWorker(QObject):
         self.resetDevices()
         self.voltmeter.write(f'G0B1I0N1W0Z0{self.rangeCtrlCmd}{self.intgrtTimeCmd}O0T5')
         self.currentSource.write('F1XL1 B1')
-        self.powerOnField()
+
 
         data = {}
         lines = []
@@ -155,13 +147,14 @@ class HallWorker(QObject):
 
 
     def resetDevices(self):
-        self.currentSource.write('K0X')
+        self.fieldController.clear()
+        self.voltmeter.clear()
+        self.scanner.clear()
         self.currentSource.clear()
+        self.currentSource.write('K0X')
         self.currentSource.write('I0.000E+0X')
         self.scanner.write(':open all')
         self.switchSgnl.emit('n/a')
-        self.scanner.clear()
+        self.fieldController.write('MO0')
         self.fieldController.write('CF0')
         self.fieldState.emit('Off')
-        self.fieldController.clear()
-        self.voltmeter.clear()
