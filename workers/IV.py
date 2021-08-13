@@ -34,8 +34,8 @@ class IVWorker(QObject):
         self.currentValues = np.linspace(-current, current, 11)
         self.switchCmd = self.switchDict[switchNumber]
         self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
-        voltLimCmd = f"V{voltLim:.4e}X"
-        self.currentSource.write(voltLimCmd)
+        self.voltLimCmd = f"V{voltLim:.4e}X"
+
 
     def connectSignals(self, finishedSlots: List = [], dataPointSlots: List = [],
         lineSlots: List = []) -> None:
@@ -59,6 +59,7 @@ class IVWorker(QObject):
         self.voltmeter.write(f'G0B1I0N1W0Z0R0{self.intgrtTimeCmd}O0T5')
         self.scanner.write(self.switchCmd)#set the selected switch
         self.currentSource.write('F1XL1 B1')
+        self.currentSource.write(self.voltLimCmd)
         line = []
         for current in self.currentValues:
 

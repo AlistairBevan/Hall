@@ -35,8 +35,7 @@ class HallWorker(QObject):
         super().__init__()
         self.voltmeter = voltmeter
         self.currentSource = currentSource
-        voltLimCmd = f"V{vLim:.4e}X"
-        self.currentSource.write(voltLimCmd)
+        self.voltLimCmd = f"V{vLim:.4e}X"
         self.scanner = scanner
         self.fieldController = fieldController
         self.intgrtTimeCmd = self.intgrtTimeDict[intgrtTime]
@@ -86,7 +85,9 @@ class HallWorker(QObject):
         """method for executing a measurement routine"""
         self.resetDevices()
         self.voltmeter.write(f'G0B1I0N1W0Z0{self.rangeCtrlCmd}{self.intgrtTimeCmd}O0T5')
+        self.currentSource.write(self.voltLimCmd)
         self.currentSource.write('F1XL1 B1')
+
 
 
         data = {}
@@ -121,7 +122,9 @@ class HallWorker(QObject):
                     self.resetDevices()
                     self.finished.emit()
                     return
-
+                #linspace can't exactly calculate the zero so we have to force it
+                if abs(current) < 1e-18:
+                    current = 0
                 currentCmdString = f'I{current:.4e}X'
                 self.currentSource.write(currentCmdString)
                 time.sleep(0.2)
