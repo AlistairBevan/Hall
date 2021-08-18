@@ -16,7 +16,7 @@ class Writer:
         self.thickness = thickness
         self.filepath = filepath
 
-    #write setter methods to be connected to signals
+    #write setter methods to be connected to signals from the input boxes
     def setTemp(self, temp: str):
         self.temp = temp
 
@@ -75,7 +75,7 @@ class Writer:
 
     #avoid overwriting data
     def available_name(self,filename: str) -> str:
-        """checks if the filename is available and returns the next best name if its not"""
+        """checks if the filename is available and returns the next best name if its not, or the original name if it is"""
         exists = os.path.exists(filename)
 
         depth =  0

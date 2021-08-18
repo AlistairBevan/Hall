@@ -111,8 +111,7 @@ class MainWindow(qtw.QMainWindow):
         """Connects the buttons to the proper logic as well as other functions
         essentially chaining things together"""
         self.hallInputs.goBtn.clicked.connect(self.hallGo)
-        self.hallInputs.goBtn.clicked.connect(lambda:
-            self.statusBar().stateLbl.setText('state: Running'))
+        self.hallInputs.goBtn.clicked.connect(lambda: self.statusBar().stateLbl.setText('state: Running'))
 
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
 
@@ -218,7 +217,7 @@ class MainWindow(qtw.QMainWindow):
         """stops the IV thread"""
         self.IVWorker.abort = True
 
-    def showRSqrd(self, rSqrds):
+    def showRSqrd(self, rSqrds: list):
         """display the rSqrds in the boxes below the graph"""
         self.belowGraph.box1.setText(f"{rSqrds[0]:.6f}")
         self.belowGraph.box2.setText(f"{rSqrds[1]:.6f}")
@@ -230,7 +229,7 @@ class MainWindow(qtw.QMainWindow):
         self.belowGraph.box8.setText(f"{rSqrds[7]:.6f}")
 
 
-    def showResults(self,results):
+    def showResults(self,results: dict):
         """display the results of the fit to the GUI"""
         #these should be looked over carefully
         self.fitResults1.SheetRes1Display.setText(f"{results['sheetRes1']:.4e}")

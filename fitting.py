@@ -77,6 +77,7 @@ class Fitter(QObject):
 
         cf = 0
         ff = 1
+        #trick taken from labview to solve the equation, its very fast
         while(abs(cf - ff) > 0.001):
             cf = ff
             ff = np.log(2)/(np.log(2*np.cosh((qAve - 1)/(qAve + 1)*np.log(2)/cf)))
