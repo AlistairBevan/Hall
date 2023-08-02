@@ -30,7 +30,7 @@ class MainWindow(qtw.QMainWindow):
         self.show()
 
     def setupInstruments(self):
-        """sets up the instruments for use"""
+        """Sets up the instruments for use"""
         rm = pyvisa.ResourceManager()
         self.voltmeter = rm.open_resource('GPIB0::2::INSTR')
         #in ms change the timeout time to be longer for the longer integrating times
