@@ -25,8 +25,7 @@ Update Instructions:
 3. To update your local repository with the latest changes, type "git pull".
 
 Precautions:
-Avoid making code changes in your local repository without being signed into GitHub. This should ensure smooth pushing and pulling of changes.
-
+- Avoid making code changes in your local repository without being signed into GitHub. This should ensure smooth pushing and pulling of changes.
 
 Updates:
 - 2023-08-02: Directories in GUI-main and custom-widgets were changed so that the user is "mocvd"
