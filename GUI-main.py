@@ -115,7 +115,8 @@ class MainWindow(qtw.QMainWindow):
 
         self.hallInputs.abortBtn.clicked.connect(self.hallAbort)
 
-        self.hallInputs.backupBtn.clicked.connect(lambda: call([r'C:\Users\lw5968\Documents\Hall_backup.bat']))
+        # May need to change directory if account or file location is changed
+        self.hallInputs.backupBtn.clicked.connect(lambda: call([r'C:\Users\mocvd\Documents\Hall_backup.bat']))
 
         self.IVColumn1.goBtn.clicked.connect(self.IVGo)
         self.IVColumn1.goBtn.clicked.connect(lambda:self.statusBar().stateLbl.setText('state: Running'))
